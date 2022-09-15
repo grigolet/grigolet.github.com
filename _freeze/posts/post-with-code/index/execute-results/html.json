@@ -1,0 +1,11 @@
+{
+  "hash": "cd356a9d22fe3396e4ff688a248dcf18",
+  "result": {
+    "markdown": "---\ntitle: \"Post With Code\"\nauthor: \"Gianluca Rigoletti\"\ndate: \"2022-09-07\"\ncategories: [news, code, analysis]\nimage: \"image.jpg\"\n---\n\nThis is a post with executable code. Test\n\n::: {.cell execution_count=1}\n``` {.python .cell-code}\nimport pandas as pd \nimport matplotlib.pyplot as plt\n\nplt.plot([1,2,3], [4,5,6])\n```\n\n::: {.cell-output .cell-output-display}\n![](index_files/figure-html/cell-2-output-1.png){width=579 height=404}\n:::\n:::\n\n\n",
+    "supporting": [
+      "index_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

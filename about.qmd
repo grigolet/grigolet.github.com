@@ -1,0 +1,57 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: marquee
+  links:
+    - icon: twitter
+      text: Twitter
+      href: https://twitter.com/gianrigoletti
+    - icon: github
+      text: Github
+      href: https://github.com/grigolet
+    - icon: instagram
+      text: Instagram
+      href: https://instagram.com/rigothemutt
+
+---
+
+# Gianluca Rigoletti
+
+I am a senior fellow physicist working at CERN. My current work if focused around the maintenance and operation of gas systems for particle detectors. A significant part of this work consists of engineering and sizing gas systems, but also develop the industrial control software
+required to operate the plants. I also work a lot with python to wrangle, analyze and visualize data from such systems.
+Another part of my activities is revolves around the study of different strategies to reduce Greenhouse gas emissions from particle
+detectors. This could go from optimizing current gas systems to test alternative gases for particle detectors employing impactful greenhouse gases.
+
+I have few hobbies I am taking care of in my free time:
+
+- Making pizza: since 2019 I started to be systematic in the way I cook pizza as I wanted to try my best to achieve a good napolitean pizza at my place.
+- IoT devices for plants based experiments. I test time to times micro controllers and different sensors to grow some herbs in my indoor gardens.
+- Eating and cooking: I particularly enjoy eating in places putting their best effort in sustainability of their product. I am a big lovers of tomatoes growing in the middle of Italy
+- Few other things I can't think of right now
+
+
+I am blogging in English but I speak Italian and a bit of French as well.
+
+# Education
+
+**PhD in particle physics** | 2019 - 2022
+
+_Université Claude Bernard Lyon I_
+
+**Master degree in physics of the matter** | 2017-2019
+
+_Università degli Studi di Milano-Bicocca_
+
+**Bachelor degree in physics of the matter** | 2017-2019
+
+_Università degli Studi di Milano-Bicocca_
+
+
+# Experience
+
+**CERN Senior fellow** | 2022
+_CERN, Switzerland_
+
+**Software developer** | 2016-2017
+_Yperesia, Italy_
