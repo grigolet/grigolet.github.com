@@ -200,7 +200,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#adding-multiple-y-axes-to-matplotlib-plots" id="toc-adding-multiple-y-axes-to-matplotlib-plots" class="nav-link active" data-scroll-target="#adding-multiple-y-axes-to-matplotlib-plots">Adding multiple Y axes to matplotlib plots</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#the-problem-of-visualizing-many-series" id="toc-the-problem-of-visualizing-many-series" class="nav-link" data-scroll-target="#the-problem-of-visualizing-many-series">The problem of visualizing many series</a></li>
+  <li><a href="#adding-multiple-y-axes-to-matplotlib-plots" id="toc-adding-multiple-y-axes-to-matplotlib-plots" class="nav-link" data-scroll-target="#adding-multiple-y-axes-to-matplotlib-plots">Adding multiple Y axes to matplotlib plots</a></li>
   <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
   </ul>
 </nav>
@@ -211,6 +213,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
 <p>When working with gas systems I make intense use of the <a href="https://www.winccoa.com/documentation/WinCCOA/3.18/en_US/GettingStarted/GettingStarted-60.html">WinCC-OA trending tool</a>, which allows to plot up to 8 time series on the same panel. Each time series tpyically corresponds to the value read by a sensor of a plant so it may have different units and range. The trending tool allows to have multiple Y axes on the left side which can be adjusted in terms of range and offset.</p>
 <p>I find this feature particularly helpful, especially when there is the need to quickly and explore and correlate readings of sensor from different parts of the plant</p>
 <div class="quarto-figure quarto-figure-center">
@@ -220,20 +224,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </figure>
 </div>
 <p>Tools like matplotlib and plotly make it easy to work with multiple series plotted on the same data but I found a bit cumbersome trying to visualize data having different scales on the same plot.</p>
+</section>
+<section id="the-problem-of-visualizing-many-series" class="level1">
+<h1>The problem of visualizing many series</h1>
 <p>Assuming we have a very simple set of <span class="math inline">\((x, y_n)\)</span> series a simple plot with matplotlib may look like this:</p>
 <div class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> random <span class="im">as</span> rnd</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">100</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>y1 <span class="op">=</span> [rnd.random() <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>y2 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>y3 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>y4 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">50</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y <span class="kw">in</span> [y1, y2, y3, y4]:</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> random <span class="im">as</span> rnd</span>
+<span id="cb1-3"><a href="#cb1-3"></a></span>
+<span id="cb1-4"><a href="#cb1-4"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">100</span>)</span>
+<span id="cb1-5"><a href="#cb1-5"></a>y1 <span class="op">=</span> [rnd.random() <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb1-6"><a href="#cb1-6"></a>y2 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb1-7"><a href="#cb1-7"></a>y3 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb1-8"><a href="#cb1-8"></a>y4 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">50</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb1-9"><a href="#cb1-9"></a></span>
+<span id="cb1-10"><a href="#cb1-10"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="cf">for</span> y <span class="kw">in</span> [y1, y2, y3, y4]:</span>
+<span id="cb1-12"><a href="#cb1-12"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-multiple-series-same-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -245,15 +252,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Note that in Figure <a href="#fig-multiple-series-same-plot">Figure&nbsp;1</a> each time series has a different standard deviation, thus different ranges may be needed. This is often easily accomplished by plotting each series in a different subplots. However, subplots make it more difficult to visually compare and align series, especially when time-based. For example, see subplots here:</p>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">100</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>y1 <span class="op">=</span> [rnd.random() <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">30</span> <span class="cf">else</span> rnd.random() <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y2 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">33</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>y3 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">30</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">30</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>y4 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">50</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">27</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">180</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> y <span class="kw">in</span> [y1, y2, y3, y4]:</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a>x <span class="op">=</span> <span class="bu">range</span>(<span class="dv">100</span>)</span>
+<span id="cb2-2"><a href="#cb2-2"></a>y1 <span class="op">=</span> [rnd.random() <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">30</span> <span class="cf">else</span> rnd.random() <span class="op">+</span> <span class="dv">1</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb2-3"><a href="#cb2-3"></a>y2 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">33</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">10</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb2-4"><a href="#cb2-4"></a>y3 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">10</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">30</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">20</span> <span class="op">+</span> <span class="dv">30</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb2-5"><a href="#cb2-5"></a>y4 <span class="op">=</span> [rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">50</span> <span class="cf">if</span> i <span class="op">&lt;</span> <span class="dv">27</span> <span class="cf">else</span> rnd.random() <span class="op">*</span> <span class="dv">100</span> <span class="op">+</span> <span class="dv">180</span> <span class="cf">for</span> i <span class="kw">in</span> x]</span>
+<span id="cb2-6"><a href="#cb2-6"></a></span>
+<span id="cb2-7"><a href="#cb2-7"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb2-8"><a href="#cb2-8"></a><span class="cf">for</span> y <span class="kw">in</span> [y1, y2, y3, y4]:</span>
+<span id="cb2-9"><a href="#cb2-9"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -265,12 +272,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p>Here I have added an offset to each series. Two series, <code>y1</code> and <code>y3</code> have a change point at the same index, while the other two have a change point at slightly different <code>x</code>s. We could plot each series in a subplots, perhaps vertically stacked:</p>
 <div class="cell" data-execution_count="23">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>series <span class="op">=</span> [y1, y2, y3, y4]</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="bu">len</span>(series), <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span><span class="op">*</span><span class="bu">len</span>(series)))</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    ax <span class="op">=</span> axs.flat[ix]</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    ax.set_title(<span class="ss">f'y</span><span class="sc">{</span>ix<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a>series <span class="op">=</span> [y1, y2, y3, y4]</span>
+<span id="cb3-2"><a href="#cb3-2"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="bu">len</span>(series), <span class="dv">1</span>, figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span><span class="op">*</span><span class="bu">len</span>(series)))</span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
+<span id="cb3-4"><a href="#cb3-4"></a>    ax <span class="op">=</span> axs.flat[ix]</span>
+<span id="cb3-5"><a href="#cb3-5"></a>    ax.plot(x, y, <span class="st">'.-'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6"></a>    ax.set_title(<span class="ss">f'y</span><span class="sc">{</span>ix<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-multiple-series-multiple-plots" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -281,21 +288,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 </div>
 <p>In figure <a href="#fig-multiple-series-multiple-plots">Figure&nbsp;2</a> you can see that each series as an offset when adding a proper range on the y axis. However, it is still a bit difficult to understand the real indexes of the offset. I would like to understand which come first and which comes later.</p>
-<section id="adding-multiple-y-axes-to-matplotlib-plots" class="level2">
-<h2 class="anchored" data-anchor-id="adding-multiple-y-axes-to-matplotlib-plots">Adding multiple Y axes to matplotlib plots</h2>
+</section>
+<section id="adding-multiple-y-axes-to-matplotlib-plots" class="level1">
+<h1>Adding multiple Y axes to matplotlib plots</h1>
 <p>We can starting adding multiple axes by taking inspiration from the Matplotib documentation using <a href="https://matplotlib.org/stable/gallery/spines/multiple_yaxis_with_spines.html">spines</a>, <a href="https://matplotlib.org/stable/gallery/axisartist/demo_parasite_axes.html">Parasite Axes</a> and another <a href="https://matplotlib.org/stable/gallery/axisartist/demo_parasite_axes2.html">Parasite axis</a> demo.</p>
 <p>The idea is to use <code>ax.twinx()</code> to create an additional axes. As the <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.twinx.html#matplotlib.axes.Axes.twinx">documentation says</a>, &gt; Create a new Axes with an invisible x-axis and an independent y-axis positioned opposite to the original one (i.e.&nbsp;at right).</p>
 <p>Although <code>twinx()</code> is used to create a secondary axis on the right position I could use it to create a secondary axis and leave the spines of the axis only on the left. I can use <code>set_position()</code> on the spines object to shift the spines on left:</p>
 <div class="cell" data-execution_count="60">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fig, ax1 <span class="op">=</span> plt.subplots()</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ax2 <span class="op">=</span> ax1.twinx()</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>ax3 <span class="op">=</span> ax1.twinx()</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ax4 <span class="op">=</span> ax1.twinx()</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>axs <span class="op">=</span> [ax1, ax2, ax3, ax4]</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix, (ax, y) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(axs, series)):</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, label<span class="op">=</span><span class="ss">f'y</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>ax.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a>fig, ax1 <span class="op">=</span> plt.subplots()</span>
+<span id="cb4-2"><a href="#cb4-2"></a>ax2 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb4-3"><a href="#cb4-3"></a>ax3 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb4-4"><a href="#cb4-4"></a>ax4 <span class="op">=</span> ax1.twinx()</span>
+<span id="cb4-5"><a href="#cb4-5"></a>axs <span class="op">=</span> [ax1, ax2, ax3, ax4]</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="cf">for</span> ix, (ax, y) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(axs, series)):</span>
+<span id="cb4-8"><a href="#cb4-8"></a>    ax.plot(x, y, label<span class="op">=</span><span class="ss">f'y</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb4-9"><a href="#cb4-9"></a>ax.legend()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-single-plot-bare-twinx" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -309,28 +317,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>My goal is to have these secondary y-axes on the left for easier reading. Actually, if you inspect the source of how <code>twinx()</code> is defined, it calls <code>Axes._make_twin_axes()</code> and sets later the tick position on the right using <code>YAxis.tick_right()</code> and <code>YAxis.set_label_position('right')</code>. It would be nice if <code>twinx()</code> would not assume that we want the axes to the right and instead allowed to pass a parameter which decised the position.</p>
 <p>Here below I leave a minimum working example I could think of:</p>
 <div class="cell" data-execution_count="54">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots()</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If we have to plot the first series we use </span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The axes created by plt.subplots() earlier</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ix <span class="op">==</span> <span class="dv">0</span>: </span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="co"># It's not the first series: we need to</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="co"># create a twin axes</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes.twinx()</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the ticks of the axis to the left</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.tick_left()</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the labels of the axes to the lef</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_label_position(<span class="st">'left'</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_offset_position(<span class="st">'left'</span>)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Offset the position of he ticks and labels</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># by some % of the axes avoid overlapping of axes</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'left'</span>].set_position((<span class="st">'outward'</span>, <span class="dv">40</span> <span class="op">*</span> ix))</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the actual data</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'left'</span>].set_color(<span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(axis<span class="op">=</span><span class="st">'y'</span>, colors<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a>fig, axes <span class="op">=</span> plt.subplots()</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
+<span id="cb5-3"><a href="#cb5-3"></a>    <span class="co"># If we have to plot the first series we use </span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>    <span class="co"># The axes created by plt.subplots() earlier</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a>    <span class="cf">if</span> ix <span class="op">==</span> <span class="dv">0</span>: </span>
+<span id="cb5-6"><a href="#cb5-6"></a>        ax <span class="op">=</span> axes</span>
+<span id="cb5-7"><a href="#cb5-7"></a>    <span class="cf">else</span>:</span>
+<span id="cb5-8"><a href="#cb5-8"></a>        <span class="co"># It's not the first series: we need to</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>        <span class="co"># create a twin axes</span></span>
+<span id="cb5-10"><a href="#cb5-10"></a>        ax <span class="op">=</span> axes.twinx()</span>
+<span id="cb5-11"><a href="#cb5-11"></a>    <span class="co"># Set the ticks of the axis to the left</span></span>
+<span id="cb5-12"><a href="#cb5-12"></a>    ax.yaxis.tick_left()</span>
+<span id="cb5-13"><a href="#cb5-13"></a>    <span class="co"># Set the labels of the axes to the lef</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>    ax.yaxis.set_label_position(<span class="st">'left'</span>)</span>
+<span id="cb5-15"><a href="#cb5-15"></a>    ax.yaxis.set_offset_position(<span class="st">'left'</span>)</span>
+<span id="cb5-16"><a href="#cb5-16"></a>    <span class="co"># Offset the position of he ticks and labels</span></span>
+<span id="cb5-17"><a href="#cb5-17"></a>    <span class="co"># by some % of the axes avoid overlapping of axes</span></span>
+<span id="cb5-18"><a href="#cb5-18"></a>    ax.spines[<span class="st">'left'</span>].set_position((<span class="st">'outward'</span>, <span class="dv">40</span> <span class="op">*</span> ix))</span>
+<span id="cb5-19"><a href="#cb5-19"></a>    <span class="co"># Plot the actual data</span></span>
+<span id="cb5-20"><a href="#cb5-20"></a>    ax.plot(x, y, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-21"><a href="#cb5-21"></a>    ax.spines[<span class="st">'left'</span>].set_color(<span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb5-22"><a href="#cb5-22"></a>    ax.tick_params(axis<span class="op">=</span><span class="st">'y'</span>, colors<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="index_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
 </div>
@@ -339,45 +347,52 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell" data-execution_count="59">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> mt</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots()</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If we have to plot the first series we use </span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The axes created by plt.subplots() earlier</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> ix <span class="op">==</span> <span class="dv">0</span>: </span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="co"># It's not the first series: we need to</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># create a twin axes</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>        ax <span class="op">=</span> axes.twinx()</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the ticks of the axis to the left</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.tick_left()</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the labels of the axes to the left</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_label_position(<span class="st">'left'</span>)</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_offset_position(<span class="st">'left'</span>)</span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Offset the position of he ticks and labels</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># by some % of the axes avoid overlapping of axes</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'left'</span>].set_position((<span class="st">'outward'</span>, <span class="dv">40</span> <span class="op">*</span> ix))</span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Plot the actual data</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    ax.plot(x, y, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Set the colors of the ticks, labels and spines to be</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># the same of the associated series</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>    ax.spines[<span class="st">'left'</span>].set_color(<span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(axis<span class="op">=</span><span class="st">'y'</span>, colors<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use a tick locator to have the same number of ticks</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_major_locator(mt.LinearLocator(<span class="dv">11</span>))</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># And format the labels to have only one digit after the decimals</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>    ax.yaxis.set_major_formatter(mt.StrMethodFormatter(<span class="st">'</span><span class="sc">{x:.1f}</span><span class="st">'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="im">import</span> matplotlib.ticker <span class="im">as</span> mt</span>
+<span id="cb6-2"><a href="#cb6-2"></a></span>
+<span id="cb6-3"><a href="#cb6-3"></a>fig, axes <span class="op">=</span> plt.subplots()</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="cf">for</span> ix, y <span class="kw">in</span> <span class="bu">enumerate</span>(series):</span>
+<span id="cb6-5"><a href="#cb6-5"></a>    <span class="co"># If we have to plot the first series we use </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a>    <span class="co"># The axes created by plt.subplots() earlier</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a>    <span class="cf">if</span> ix <span class="op">==</span> <span class="dv">0</span>: </span>
+<span id="cb6-8"><a href="#cb6-8"></a>        ax <span class="op">=</span> axes</span>
+<span id="cb6-9"><a href="#cb6-9"></a>    <span class="cf">else</span>:</span>
+<span id="cb6-10"><a href="#cb6-10"></a>        <span class="co"># It's not the first series: we need to</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a>        <span class="co"># create a twin axes</span></span>
+<span id="cb6-12"><a href="#cb6-12"></a>        ax <span class="op">=</span> axes.twinx()</span>
+<span id="cb6-13"><a href="#cb6-13"></a>    <span class="co"># Set the ticks of the axis to the left</span></span>
+<span id="cb6-14"><a href="#cb6-14"></a>    ax.yaxis.tick_left()</span>
+<span id="cb6-15"><a href="#cb6-15"></a>    <span class="co"># Set the labels of the axes to the left</span></span>
+<span id="cb6-16"><a href="#cb6-16"></a>    ax.yaxis.set_label_position(<span class="st">'left'</span>)</span>
+<span id="cb6-17"><a href="#cb6-17"></a>    ax.yaxis.set_offset_position(<span class="st">'left'</span>)</span>
+<span id="cb6-18"><a href="#cb6-18"></a>    <span class="co"># Offset the position of he ticks and labels</span></span>
+<span id="cb6-19"><a href="#cb6-19"></a>    <span class="co"># by some % of the axes avoid overlapping of axes</span></span>
+<span id="cb6-20"><a href="#cb6-20"></a>    ax.spines[<span class="st">'left'</span>].set_position((<span class="st">'outward'</span>, <span class="dv">40</span> <span class="op">*</span> ix))</span>
+<span id="cb6-21"><a href="#cb6-21"></a>    <span class="co"># Plot the actual data</span></span>
+<span id="cb6-22"><a href="#cb6-22"></a>    ax.plot(x, y, color<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb6-23"><a href="#cb6-23"></a>    <span class="co"># Set the colors of the ticks, labels and spines to be</span></span>
+<span id="cb6-24"><a href="#cb6-24"></a>    <span class="co"># the same of the associated series</span></span>
+<span id="cb6-25"><a href="#cb6-25"></a>    ax.spines[<span class="st">'left'</span>].set_color(<span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb6-26"><a href="#cb6-26"></a>    ax.tick_params(axis<span class="op">=</span><span class="st">'y'</span>, colors<span class="op">=</span><span class="ss">f'C</span><span class="sc">{</span>ix<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb6-27"><a href="#cb6-27"></a>    <span class="co"># Use a tick locator to have the same number of ticks</span></span>
+<span id="cb6-28"><a href="#cb6-28"></a>    ax.yaxis.set_major_locator(mt.LinearLocator(<span class="dv">11</span>))</span>
+<span id="cb6-29"><a href="#cb6-29"></a>    <span class="co"># And format the labels to have only one digit after the decimals</span></span>
+<span id="cb6-30"><a href="#cb6-30"></a>    ax.yaxis.set_major_formatter(mt.StrMethodFormatter(<span class="st">'</span><span class="sc">{x:.1f}</span><span class="st">'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <p><img src="index_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
 </div>
 </div>
 </section>
-<section id="conclusions" class="level2">
-<h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
-<p>I find very useful for myself to provide a minimal example of having a plot with multiple axes, though a final plot may require more subtle adjustements. Keypoints to have multiple y axes: * Use <code>twinx()</code> to create an additional axis * Set ticks, labels and offest positions to the right: <code>ax.yaxis.tick_left()</code>, <code>ax.yaxis.set_label_position('left')</code>, <code>ax.yaxis.set_offset_position('left')</code> * Adjust the offset of the spines to the left using points, percentage or data coordinate. In the case of points: <code>ax.spines['left'].set_position()</code> * Change spines, tick and label colors to the same of the series for better readability: <code>ax.spines['left'].set_color(color)</code>, <code>ax.tick_params(axis='y', colors=color)</code> * Optionally adjust the number of ticks to be the same for all the axes: use a <code>LinearLocator</code> class with a fixed number of points</p>
+<section id="conclusions" class="level1">
+<h1>Conclusions</h1>
+<p>I find very useful for myself to provide a minimal example of having a plot with multiple axes, though a final plot may require more subtle adjustements. Keypoints to have multiple y axes:</p>
+<ul>
+<li>Use <code>twinx()</code> to create an additional axis</li>
+<li>Set ticks, labels and offest positions to the right: <code>ax.yaxis.tick_left()</code>, <code>ax.yaxis.set_label_position('left')</code>, <code>ax.yaxis.set_offset_position('left')</code></li>
+<li>Adjust the offset of the spines to the left using points, percentage or data coordinate. In the case of points: <code>ax.spines['left'].set_position()</code></li>
+<li>Change spines, tick and label colors to the same of the series for better readability: <code>ax.spines['left'].set_color(color)</code>, <code>ax.tick_params(axis='y', colors=color)</code></li>
+<li>Optionally adjust the number of ticks to be the same for all the axes: use a <code>LinearLocator</code> class with a fixed number of points</li>
+</ul>
 
 
 </section>

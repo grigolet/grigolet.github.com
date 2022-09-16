@@ -17,6 +17,8 @@ format:
   html:
     theme: zephyr
     css: styles.css
+    code-line-numbers: true
+
 
 
 
