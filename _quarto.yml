@@ -7,6 +7,7 @@ website:
   description: "Gianluca Rigoletti's blog about data analysis, visualization and sometimes cooking."
   twitter-card: true
   open-graph: true
+  image: "about.png"
   comments:
     giscus:
       repo: grigolet/blog-comments
