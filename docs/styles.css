@@ -1,3 +1,7 @@
 h1.title {
     color:white;
 }
+
+code {
+    white-space: pre-wrap;
+}
