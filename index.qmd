@@ -1,5 +1,6 @@
 ---
 title: ''
+description: "A blog about data analysis, visualization and sometimes cooking."
 listing:
   contents: posts
   sort: "date desc"
