@@ -5,6 +5,8 @@ website:
   title: "G.R.'s Blog"
   site-url: https://grigolet.github.io
   description: "Gianluca Rigoletti's blog about data analysis, visualization and sometimes cooking."
+  twitter-card: true
+  open-graph: true
   comments:
     giscus:
       repo: grigolet/blog-comments
