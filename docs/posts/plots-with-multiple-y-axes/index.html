@@ -126,6 +126,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="G.R.’s Blog - Multiple Y axes with matplotlib">
+<meta property="og:description" content="Because sometimes right y axes are not enough">
+<meta property="og:image" content="https://grigolet.github.io/posts/plots-with-multiple-y-axes/preview.png">
+<meta property="og:site-name" content="G.R.'s Blog">
+<meta property="og:image:height" content="252">
+<meta property="og:image:width" content="504">
+<meta name="twitter:title" content="G.R.’s Blog - Multiple Y axes with matplotlib">
+<meta name="twitter:description" content="Because sometimes right y axes are not enough">
+<meta name="twitter:image" content="https://grigolet.github.io/posts/plots-with-multiple-y-axes/preview.png">
+<meta name="twitter:image-height" content="252">
+<meta name="twitter:image-width" content="504">
+<meta name="twitter:card" content="summary_large_image">
 </head>
 
 <body class="nav-fixed">
@@ -233,7 +245,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="the-problem-of-visualizing-many-series" class="level1">
 <h1>The problem of visualizing many series</h1>
 <p>Assuming we have a very simple set of <span class="math inline">\((x, y_n)\)</span> series a simple plot with matplotlib may look like this:</p>
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-2"><a href="#cb1-2"></a><span class="im">import</span> random <span class="im">as</span> rnd</span>
 <span id="cb1-3"><a href="#cb1-3"></a></span>

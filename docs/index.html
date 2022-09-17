@@ -70,7 +70,7 @@ ul.task-list li input[type="checkbox"] {
     }
 
     const options = {
-      valueNames: ['listing-date','listing-title','listing-reading-time','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      valueNames: ['listing-date','listing-title','listing-image','listing-reading-time','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
       
       searchColumns: ["listing-date","listing-title","listing-author","listing-subtitle","listing-image","listing-description","listing-categories"],
     };
@@ -93,7 +93,17 @@ ul.task-list li input[type="checkbox"] {
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="G.R.'s Blog" href="index.xml"></head>
+<link rel="alternate" type="application/rss+xml" title="G.R.'s Blog" href="index.xml"><meta property="og:title" content="G.R.’s Blog -">
+<meta property="og:image" content="https://grigolet.github.io/posts/plots-with-multiple-y-axes/preview.png">
+<meta property="og:site-name" content="G.R.'s Blog">
+<meta property="og:image:height" content="252">
+<meta property="og:image:width" content="504">
+<meta name="twitter:title" content="G.R.’s Blog -">
+<meta name="twitter:image" content="https://grigolet.github.io/posts/plots-with-multiple-y-axes/preview.png">
+<meta name="twitter:image-height" content="252">
+<meta name="twitter:image-width" content="504">
+<meta name="twitter:card" content="summary_large_image">
+</head>
 
 <body class="nav-fixed">
 
@@ -153,7 +163,10 @@ ul.task-list li input[type="checkbox"] {
 
 <div class="quarto-listing quarto-listing-container-default" id="listing-listing">
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="python,matplotlib,plot,visualization" data-listing-date-sort="1662588000000" data-listing-file-modified-sort="1663273227269" data-listing-reading-time-sort="3.385">
+<div class="quarto-post image-right" data-index="0" data-categories="python,matplotlib,plot,visualization" data-listing-date-sort="1662588000000" data-listing-file-modified-sort="1663399980263" data-listing-reading-time-sort="3.385">
+<div class="thumbnail">
+<p><a href="./posts/plots-with-multiple-y-axes/index.html"> <img src="./posts/plots-with-multiple-y-axes/preview.png" class="thumnail-image"> </a></p>
+</div>
 <div class="body">
 <a href="./posts/plots-with-multiple-y-axes/index.html">
 <h3 class="no-anchor listing-title">
@@ -177,11 +190,7 @@ plot
 visualization
 </div>
 </div>
-<a href="./posts/plots-with-multiple-y-axes/index.html">
-<div class="listing-description">
-When working with gas systems I make intense use of the WinCC-OA trending tool, which allows to plot up to 8 time series on the same panel. Each time series tpyically corresponds to the value read by a sensor of a plant so it may have different units and range. The trending tool allows to have multiple Y axes on the left side which can be adjusted in terms of range and offset.
-</div>
-</a>
+<a href="./posts/plots-with-multiple-y-axes/index.html"> </a>
 </div>
 <div class="metadata">
 <a href="./posts/plots-with-multiple-y-axes/index.html">
@@ -195,6 +204,13 @@ Sep 8, 2022
 </div>
 </div>
 <div class="quarto-post image-right" data-index="1" data-categories="jupyter,notebook,python,quarto" data-listing-date-sort="1662501600000" data-listing-file-modified-sort="1663338773592" data-listing-reading-time-sort="3.68">
+<div class="thumbnail">
+<a href="./posts/a-post-with-jupyter-notebook/index.html">
+<div class="thumbnail-image">
+
+</div>
+</a><p><a href="./posts/a-post-with-jupyter-notebook/index.html"></a></p>
+</div>
 <div class="body">
 <a href="./posts/a-post-with-jupyter-notebook/index.html">
 <h3 class="no-anchor listing-title">
@@ -218,11 +234,7 @@ python
 quarto
 </div>
 </div>
-<a href="./posts/a-post-with-jupyter-notebook/index.html">
-<div class="listing-description">
-Few days ago I found Quarto. I understood it is an authoring framework based on pandoc and that has full support of jupyter notebooks as input files. Since lot of work I carry on at the moment makes a heavy use of jupyter notebook I decided to try Quarto and use it for two main purposes: the first is as a replacement of <code>jupyter nbconvert</code> that I have intensively used to convert notebooks to html pages.
-</div>
-</a>
+<a href="./posts/a-post-with-jupyter-notebook/index.html"> </a>
 </div>
 <div class="metadata">
 <a href="./posts/a-post-with-jupyter-notebook/index.html">
