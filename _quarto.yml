@@ -2,7 +2,9 @@ project:
   type: website
   output-dir: docs
 website:
-  title: "Gianluca Rigoletti's Blog"
+  title: "G.R.'s Blog"
+  site-url: https://grigolet.github.io
+  description: "Gianluca Rigoletti's blog about data analysis, visualization and sometimes cooking."
   comments:
     giscus:
       repo: grigolet/blog-comments
@@ -13,6 +15,8 @@ website:
         href: https://github.com/grigolet
       - icon: twitter
         href: https://twitter.com/gianrigoletti
+      - icon: rss
+        href: index.xml
 format:
   html:
     theme: zephyr
