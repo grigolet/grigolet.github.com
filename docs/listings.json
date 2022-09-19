@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/my-matplotlib-stylesheet/index.html",
       "/posts/plots-with-multiple-y-axes/index.html",
       "/posts/a-post-with-jupyter-notebook/index.html"
     ]

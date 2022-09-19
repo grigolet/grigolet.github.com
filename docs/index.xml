@@ -15,7 +15,301 @@
 <link>https://grigolet.github.io/index.html</link>
 </image>
 <generator>quarto-1.1</generator>
-<lastBuildDate>Wed, 07 Sep 2022 22:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sat, 17 Sep 2022 22:00:00 GMT</lastBuildDate>
+<item>
+  <title>My matplotlib stylesheet</title>
+  <link>https://grigolet.github.io/posts/my-matplotlib-stylesheet/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>When working on R&amp;D of gasesous detectors I tend to produce lots of plots for internal group discussions, conference presentations and publication publishing. Since most of these plots shows performance relative to gaseous detectors and since I am based at CERN I get to see lot of similar plots made by some other groups using <a href="https://root.cern.ch/">ROOT</a>, the de-facto standard analysis tool for high energy physics.</p>
+<p>If I really have to be honest I have never liked ROOT so much, although I understand it provides several useful tools, from plotting data and fitting functions to GUI toolkits. Most, if not all the plots regarding the discovery of the Higgs boson were produced using ROOT. The layout of ROOT plots is then recognized and approved by the majority of the community in high energy physics.</p>
+<p>If we have to compare a default plot made using root versus a default plot made with matplotlib, this would be the result</p>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> ROOT <span class="im" style="color: #00769E;">as</span> rt</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-4"></span>
+<span id="cb1-5">x <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">321.0</span>, <span class="fl" style="color: #AD0000;">860.0</span>, <span class="fl" style="color: #AD0000;">777.0</span>, <span class="fl" style="color: #AD0000;">562.0</span>, <span class="fl" style="color: #AD0000;">374.0</span>, <span class="fl" style="color: #AD0000;">132.0</span>, <span class="fl" style="color: #AD0000;">816.0</span>, <span class="fl" style="color: #AD0000;">220.0</span>, <span class="fl" style="color: #AD0000;">253.0</span>])</span>
+<span id="cb1-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">134.0</span>,<span class="fl" style="color: #AD0000;">307.0</span>,<span class="fl" style="color: #AD0000;">299.0</span>,<span class="fl" style="color: #AD0000;">213.0</span>,<span class="fl" style="color: #AD0000;">135.0</span>,<span class="fl" style="color: #AD0000;">50.0</span>,<span class="fl" style="color: #AD0000;">297.0</span>,<span class="fl" style="color: #AD0000;">85.0</span>,<span class="fl" style="color: #AD0000;">95.0</span>])</span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;"># Let's just make sure we are using the default settings now</span></span>
+<span id="cb1-9">plt.style.use(<span class="st" style="color: #20794D;">'default'</span>)</span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;"># Matplotlib</span></span>
+<span id="cb1-12">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots()</span>
+<span id="cb1-13">ax.<span class="bu" style="color: null;">set</span>(title<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Rate vs. Currents'</span>, xlabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Rate [Hz/cm$^2$]'</span>, ylabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Currents [uA]'</span>)</span>
+<span id="cb1-14">ax.plot(x, y, <span class="st" style="color: #20794D;">'.'</span>)</span>
+<span id="cb1-15">ax.axhline(<span class="dv" style="color: #AD0000;">150</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>)</span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="co" style="color: #5E5E5E;"># ROOT</span></span>
+<span id="cb1-18">canvas <span class="op" style="color: #5E5E5E;">=</span> rt.TCanvas(<span class="st" style="color: #20794D;">"rate_vs_current"</span>, <span class="st" style="color: #20794D;">"Rate vs. Currents"</span>)</span>
+<span id="cb1-19">graph <span class="op" style="color: #5E5E5E;">=</span> rt.TGraph(<span class="bu" style="color: null;">len</span>(x), x, y)</span>
+<span id="cb1-20">graph.SetTitle(<span class="st" style="color: #20794D;">"Rate vs. Currents"</span>)</span>
+<span id="cb1-21">graph.SetMarkerStyle(<span class="dv" style="color: #AD0000;">7</span>)</span>
+<span id="cb1-22">graph.GetXaxis().SetTitle(<span class="st" style="color: #20794D;">"Rate [Hz/cm^</span><span class="sc" style="color: #5E5E5E;">{2}</span><span class="st" style="color: #20794D;">]"</span>)</span>
+<span id="cb1-23">graph.GetYaxis().SetTitle(<span class="st" style="color: #20794D;">"Currents [uA]"</span>)</span>
+<span id="cb1-24">line <span class="op" style="color: #5E5E5E;">=</span> rt.TLine(graph.GetXaxis().GetXmin(), <span class="dv" style="color: #AD0000;">150</span>, graph.GetXaxis().GetXmax(), <span class="dv" style="color: #AD0000;">150</span>)</span>
+<span id="cb1-25">line.SetLineColor(rt.kRed)</span>
+<span id="cb1-26">graph.Draw(<span class="st" style="color: #20794D;">'AP'</span>)</span>
+<span id="cb1-27">line.Draw(<span class="st" style="color: #20794D;">"L"</span>)</span>
+<span id="cb1-28">canvas.Draw()</span></code></pre></div>
+</details>
+<div class="cell quarto-layout-panel" data-execution_count="14">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-default-matplotlib" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://grigolet.github.io/posts/my-matplotlib-stylesheet/index_files/figure-html/fig-default-matplotlib-output-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;1: Default matplotlib plot</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-default-matplotlib" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://grigolet.github.io/posts/my-matplotlib-stylesheet/index_files/figure-html/fig-default-matplotlib-output-2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;2: Default ROOT plot</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="styling-matplotlib-plots" class="level1">
+<h1>Styling matplotlib plots</h1>
+<p>My goal here is to have the matplotlib plot to look a bit more like the ROOT one. I recently came to find that there is a python package called <a href="https://github.com/scikit-hep/mplhep">mplhep</a> that is aiming at producing ROOT-like style plots used in high energy physics. I found the package to be really helpful, especially when there is the need to add some labels regarding collaborations. However, in my particular case, I noticed that the default axes ticks, labels, spines layout were matching more matplotlib defaults than ROOT ones.</p>
+<p>Before I came to know <code>mplhep</code> I decided to create my own <a href="https://matplotlib.org/stable/tutorials/introductory/customizing.html#matplotlibrc-sample">matplotlibrc</a> file, which, as the name may suggest, is a file containing defaults used to style matplotlib plots.</p>
+<p>If you have a look at the default <code>matplotlibrc</code> content, you could see that it is organized in sections. Within each section you can find a set of defaults.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>default_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb2-1">...</span>
+<span id="cb2-2">## Matplotlib configuration are currently divided into following parts:</span>
+<span id="cb2-3">##     - BACKENDS</span>
+<span id="cb2-4">##     - LINES</span>
+<span id="cb2-5">##     - PATCHES</span>
+<span id="cb2-6">##     - HATCHES</span>
+<span id="cb2-7">##     - BOXPLOT</span>
+<span id="cb2-8">##     - FONT</span>
+<span id="cb2-9">##     - TEXT</span>
+<span id="cb2-10">##     - LaTeX</span>
+<span id="cb2-11">##     - AXES</span>
+<span id="cb2-12">##     - DATES</span>
+<span id="cb2-13">##     - TICKS</span>
+<span id="cb2-14">##     - GRIDS</span>
+<span id="cb2-15">##     - LEGEND</span>
+<span id="cb2-16">##     - FIGURE</span>
+<span id="cb2-17">##     - IMAGES</span>
+<span id="cb2-18">##     - CONTOUR PLOTS</span>
+<span id="cb2-19">##     - ERRORBAR PLOTS</span>
+<span id="cb2-20">##     - HISTOGRAM PLOTS</span>
+<span id="cb2-21">##     - SCATTER PLOTS</span>
+<span id="cb2-22">##     - AGG RENDERING</span>
+<span id="cb2-23">##     - PATHS</span>
+<span id="cb2-24">##     - SAVING FIGURES</span>
+<span id="cb2-25">##     - INTERACTIVE KEYMAPS</span>
+<span id="cb2-26">##     - ANIMATION</span>
+<span id="cb2-27">...</span></code></pre></div>
+</div>
+<p>I will detail the sections that I have modified to make plots look more like ROOT ones.</p>
+<section id="lines" class="level2">
+<h2 class="anchored" data-anchor-id="lines">LINES</h2>
+<p>In the <code>LINES</code> section the only default value that I have changed is the <code>lines.linewidth</code> set to 0.5, instead of the 1.5 default value.</p>
+</section>
+<section id="patches" class="level2">
+<h2 class="anchored" data-anchor-id="patches">PATCHES</h2>
+<p>In the <code>PATCHES</code> section I have also decrease the <code>patch.linewidth</code> to 0.5</p>
+</section>
+<section id="font" class="level2">
+<h2 class="anchored" data-anchor-id="font">FONT</h2>
+<p>For the font I haven’t found any easy way to add a web font into matplotlib without adding some lines of code. For this reason I have installed GNU Free font and modified the order of the <code>sans-serif</code> font to be: <code>Helvetica, FreeSans, Nimbus Sans, DejaVu Sans, Bitstream Vera Sans, Computer Modern Sans Serif, Lucida Grande, Verdana, Geneva, Lucid, Arial, Avant Garde, sans-serif</code></p>
+<p>In the <code>FONT</code> section I have set <code>font.weight</code> to <code>regular</code> by default.</p>
+</section>
+<section id="axes-and-axis" class="level2">
+<h2 class="anchored" data-anchor-id="axes-and-axis">AXES and AXIS</h2>
+<p>In the <code>AXES</code> and <code>AXIS</code> sections I tweaked multiple lines. I will report only the modified lines:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb3-1"># AXES</span>
+<span id="cb3-2">axes.grid           : False   ## display grid or not</span>
+<span id="cb3-3">axes.labelsize      : x-large  ## fontsize of the x any y labels</span>
+<span id="cb3-4">axes.labelweight    : regular  ## weight of the x and y labels</span>
+<span id="cb3-5">axes.formatter.useoffset      : False    ## If True, the tick label formatter</span>
+<span id="cb3-6">axes.formatter.offset_threshold : 2     ## When useoffset is True, the offset</span>
+<span id="cb3-7">...</span>
+<span id="cb3-8"># AXIS</span>
+<span id="cb3-9">xaxis.labellocation: right  # alignment of the xaxis label: {left, right, center}</span>
+<span id="cb3-10">yaxis.labellocation: top  # alignment of the yaxis label: {bottom, top, center}</span></code></pre></div>
+</div>
+</section>
+<section id="ticks" class="level2">
+<h2 class="anchored" data-anchor-id="ticks">TICKS</h2>
+<p>Matplotlib’s tick layout is what differs the most from ROOT default’s style. In this case the modified lines were the following:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb4-1">xtick.top            : True  ## draw ticks on the top side</span>
+<span id="cb4-2">xtick.major.size     : 8    ## major tick size in points</span>
+<span id="cb4-3">xtick.minor.size     : 4      ## minor tick size in points</span>
+<span id="cb4-4">xtick.major.width    : 0.5    ## major tick width in points</span>
+<span id="cb4-5">xtick.minor.width    : 0.5    ## minor tick width in points</span>
+<span id="cb4-6">xtick.major.pad      : 6    ## distance to major tick label in points</span>
+<span id="cb4-7">xtick.direction      : in    ## direction: in, out, or inout</span>
+<span id="cb4-8">xtick.minor.visible  : True  ## visibility of minor ticks on x-axis</span>
+<span id="cb4-9">ytick.right          : True   ## draw ticks on the right side</span>
+<span id="cb4-10">ytick.major.size     : 8      ## major tick size in points</span>
+<span id="cb4-11">ytick.minor.size     : 4      ## minor tick size in points</span>
+<span id="cb4-12">ytick.major.width    : 0.5    ## major tick width in points</span>
+<span id="cb4-13">ytick.minor.width    : 0.5    ## minor tick width in points</span>
+<span id="cb4-14">ytick.major.pad      : 6    ## distance to major tick label in points</span>
+<span id="cb4-15">ytick.direction      : in     ## direction: in, out, or inout</span>
+<span id="cb4-16">ytick.minor.visible  : True  ## visibility of minor ticks on y-axis</span></code></pre></div>
+</div>
+</section>
+<section id="grid" class="level2">
+<h2 class="anchored" data-anchor-id="grid">GRID</h2>
+<p>Although I used to love grid, they might make the plot a bit “heavy” to read when there are several points and lines. For this reason I kept grids disabled:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb5-1">grid.color       :   k    ## black</span>
+<span id="cb5-2">grid.linestyle   :   --         ## dashed</span>
+<span id="cb5-3">grid.linewidth   :   0.5       ## in points</span></code></pre></div>
+</div>
+</section>
+<section id="legend" class="level2">
+<h2 class="anchored" data-anchor-id="legend">LEGEND</h2>
+<p>Regardin the legend handling I got some inspirations by having a look at some common plots used within the community I am working with:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb6-1">legend.frameon       : True     ## if True, draw the legend on a background patch</span>
+<span id="cb6-2">legend.framealpha    : None      ## legend patch transparency</span>
+<span id="cb6-3">legend.edgecolor     : inherit      ## background patch boundary color</span>
+<span id="cb6-4">legend.fancybox      : False     ## if True, use a rounded box for the</span>
+<span id="cb6-5">                                 ## legend background, else a rectangle</span>
+<span id="cb6-6">legend.scatterpoints : 3        ## number of scatter points</span>
+<span id="cb6-7">legend.fontsize      : large</span>
+<span id="cb6-8">legend.handlelength  : 0.7      ## the length of the legend lines</span>
+<span id="cb6-9">legend.handleheight  : 1      ## the height of the legend handle</span>
+<span id="cb6-10">legend.handletextpad : 1.2      ## the space between the legend line and legend text</span>
+<span id="cb6-11">legend.borderaxespad : 1      ## the border between the axes and legend edge</span></code></pre></div>
+</div>
+</section>
+<section id="figure" class="level2">
+<h2 class="anchored" data-anchor-id="figure">FIGURE</h2>
+<p>Although there are really no standard on the figure sizes I like a default 3:2 ratio and a minimum DPI of 300:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb7-1">figure.figsize   : 6, 4       ## figure size in inches</span>
+<span id="cb7-2">figure.dpi       : 300        ## figure dots per inch</span></code></pre></div>
+</div>
+</section>
+<section id="other-tweakings" class="level2">
+<h2 class="anchored" data-anchor-id="other-tweakings">Other tweakings</h2>
+<p>I have set the cap size of the error bars, as by default is 0 and set the histogram binning to <code>"auto"</code>:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>my_matplotlibrc.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode numberSource txt number-lines code-with-copy"><code class="sourceCode default"><span id="cb8-1">errorbar.capsize : 1.5            ## length of end cap on error bars in pixels</span>
+<span id="cb8-2">hist.bins : auto                 ## The default number of histogram bins.</span>
+<span id="cb8-3">                                  ## If Numpy 1.11 or later is</span>
+<span id="cb8-4">                                  ## installed, may also be `auto`</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="final-results" class="level1">
+<h1>Final results</h1>
+<p>If I try to make again the plot in Figure Figure&nbsp;2 with these new defaults and put it side by side to a ROOT plot I get something like this:</p>
+<div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb9-2"><span class="im" style="color: #00769E;">import</span> ROOT <span class="im" style="color: #00769E;">as</span> rt</span>
+<span id="cb9-3"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb9-4"></span>
+<span id="cb9-5">x <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">321.0</span>, <span class="fl" style="color: #AD0000;">860.0</span>, <span class="fl" style="color: #AD0000;">777.0</span>, <span class="fl" style="color: #AD0000;">562.0</span>, <span class="fl" style="color: #AD0000;">374.0</span>, <span class="fl" style="color: #AD0000;">132.0</span>, <span class="fl" style="color: #AD0000;">816.0</span>, <span class="fl" style="color: #AD0000;">220.0</span>, <span class="fl" style="color: #AD0000;">253.0</span>])</span>
+<span id="cb9-6">y <span class="op" style="color: #5E5E5E;">=</span> np.array([<span class="fl" style="color: #AD0000;">134.0</span>,<span class="fl" style="color: #AD0000;">307.0</span>,<span class="fl" style="color: #AD0000;">299.0</span>,<span class="fl" style="color: #AD0000;">213.0</span>,<span class="fl" style="color: #AD0000;">135.0</span>,<span class="fl" style="color: #AD0000;">50.0</span>,<span class="fl" style="color: #AD0000;">297.0</span>,<span class="fl" style="color: #AD0000;">85.0</span>,<span class="fl" style="color: #AD0000;">95.0</span>])</span>
+<span id="cb9-7"></span>
+<span id="cb9-8"><span class="co" style="color: #5E5E5E;"># Use a context manager to plot only this plot with newer values</span></span>
+<span id="cb9-9">plt.style.use(<span class="st" style="color: #20794D;">'https://gitlab.cern.ch/-/snippets/2223/raw/master/rpcecogas.mplstyle'</span>)</span>
+<span id="cb9-10">fig, ax <span class="op" style="color: #5E5E5E;">=</span> plt.subplots()</span>
+<span id="cb9-11">ax.<span class="bu" style="color: null;">set</span>(title<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Rate vs. Currents'</span>, xlabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Rate [Hz/cm$^2$]'</span>, ylabel<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'Currents [uA]'</span>)</span>
+<span id="cb9-12">ax.plot(x, y, <span class="st" style="color: #20794D;">'.'</span>)</span>
+<span id="cb9-13">ax.axhline(<span class="dv" style="color: #AD0000;">150</span>, color<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'r'</span>)</span>
+<span id="cb9-14"></span>
+<span id="cb9-15"><span class="co" style="color: #5E5E5E;"># ROOT</span></span>
+<span id="cb9-16">canvas <span class="op" style="color: #5E5E5E;">=</span> rt.TCanvas(<span class="st" style="color: #20794D;">"rate_vs_current"</span>, <span class="st" style="color: #20794D;">"Rate vs. Currents"</span>)</span>
+<span id="cb9-17">graph <span class="op" style="color: #5E5E5E;">=</span> rt.TGraph(<span class="bu" style="color: null;">len</span>(x), x, y)</span>
+<span id="cb9-18">graph.SetTitle(<span class="st" style="color: #20794D;">"Rate vs. Currents"</span>)</span>
+<span id="cb9-19">graph.SetMarkerStyle(<span class="dv" style="color: #AD0000;">7</span>)</span>
+<span id="cb9-20">graph.GetXaxis().SetTitle(<span class="st" style="color: #20794D;">"Rate [Hz/cm^</span><span class="sc" style="color: #5E5E5E;">{2}</span><span class="st" style="color: #20794D;">]"</span>)</span>
+<span id="cb9-21">graph.GetYaxis().SetTitle(<span class="st" style="color: #20794D;">"Currents [uA]"</span>)</span>
+<span id="cb9-22">line <span class="op" style="color: #5E5E5E;">=</span> rt.TLine(graph.GetXaxis().GetXmin(), <span class="dv" style="color: #AD0000;">150</span>, graph.GetXaxis().GetXmax(), <span class="dv" style="color: #AD0000;">150</span>)</span>
+<span id="cb9-23">line.SetLineColor(rt.kRed)</span>
+<span id="cb9-24">graph.Draw(<span class="st" style="color: #20794D;">'AP'</span>)</span>
+<span id="cb9-25">line.Draw(<span class="st" style="color: #20794D;">"L"</span>)</span>
+<span id="cb9-26">canvas.Draw()</span></code></pre></div>
+</details>
+<div class="cell quarto-layout-panel" data-execution_count="15">
+<div class="quarto-layout-row quarto-layout-valign-top">
+<div class="cell-output cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-new-default-matplotlib" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://grigolet.github.io/posts/my-matplotlib-stylesheet/index_files/figure-html/fig-new-default-matplotlib-output-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;3: Custom matplotlib plot</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div id="fig-new-default-matplotlib" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="https://grigolet.github.io/posts/my-matplotlib-stylesheet/index_files/figure-html/fig-new-default-matplotlib-output-2.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Figure&nbsp;4: Default ROOT plot</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>As you can notice in Figure&nbsp;4, the plots look similar. I have left a bigger x and y label titles for better readability and I have left the default <code>tab10</code> matplotlib palette for colors, as I don’t like the palette handling in ROOT.</p>
+<p>You can find the stylesheet I am currently using available as a gitlab snippet here: https://gitlab.cern.ch/-/snippets/2223 There are couple of ways to use a stylesheet. The first, that applies globally, is to use <code>plt.style.use(url)</code>. The second instead, could be using a context manager provided by matplotlib that allows to apply styles on a plot within the context manager itself. For more information, see the <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.rc_context.html">matplotlib documentation on <code>rc_context</code></a> There is only one caveat that I noticed when writing this post: if I use <code>rc_context</code> then I have some issues loading the system’s font and the plot will fallback to some defaults fonts. I don’t know if this is a matplotlib bug or if it is related to my local machine. I will have to investigate</p>
+</section>
+<section id="conclusions" class="level1">
+<h1>Conclusions</h1>
+<p>In this post I highlighted the matplotlib configuration I changed to have default plots looking more like ROOT. I am making a heavy use of these styles and I have observed that very few people notice that difference between a ROOT like plot and one made with these defaults.</p>
+<p>In the future I plan to revise a little bit the configuration to further improve the layout.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>python</category>
+  <category>matplotlib</category>
+  <category>plot</category>
+  <category>visualization</category>
+  <category>style</category>
+  <guid>https://grigolet.github.io/posts/my-matplotlib-stylesheet/index.html</guid>
+  <pubDate>Sat, 17 Sep 2022 22:00:00 GMT</pubDate>
+  <media:content url="https://grigolet.github.io/posts/my-matplotlib-stylesheet/preview.png" medium="image" type="image/png" height="106" width="144"/>
+</item>
 <item>
   <title>Multiple Y axes with matplotlib</title>
   <link>https://grigolet.github.io/posts/plots-with-multiple-y-axes/index.html</link>

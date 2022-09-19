@@ -2,18 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://grigolet.github.io/index.html</loc>
-    <lastmod>2022-09-17T07:52:30.635Z</lastmod>
+    <lastmod>2022-09-19T16:06:35.973Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/plots-with-multiple-y-axes/index.html</loc>
-    <lastmod>2022-09-17T07:52:31.848Z</lastmod>
+    <lastmod>2022-09-19T16:06:37.760Z</lastmod>
+  </url>
+  <url>
+    <loc>https://grigolet.github.io/posts/my-matplotlib-stylesheet/index.html</loc>
+    <lastmod>2022-09-19T16:06:40.130Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/a-post-with-jupyter-notebook/index.html</loc>
-    <lastmod>2022-09-17T07:52:32.865Z</lastmod>
+    <lastmod>2022-09-19T16:06:41.637Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/about.html</loc>
-    <lastmod>2022-09-17T07:52:33.345Z</lastmod>
+    <lastmod>2022-09-19T16:06:42.210Z</lastmod>
   </url>
 </urlset>
