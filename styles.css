@@ -5,3 +5,11 @@ h1.title {
 code {
     white-space: pre-wrap;
 }
+
+.quarto-categories {
+    flex-wrap: wrap;
+}
+
+.quarto-category {
+    margin-top: 0.5rem;
+}
