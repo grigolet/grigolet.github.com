@@ -15,7 +15,263 @@
 <link>https://grigolet.github.io/index.html</link>
 </image>
 <generator>quarto-1.1</generator>
-<lastBuildDate>Thu, 29 Sep 2022 22:00:00 GMT</lastBuildDate>
+<lastBuildDate>Sun, 16 Oct 2022 22:00:00 GMT</lastBuildDate>
+<item>
+  <title>My take on overlapping densities (a.k.a. ridge) plots</title>
+  <link>https://grigolet.github.io/posts/overlapping-densities-plots/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Recently I had to produce some plots showing a distribution of the charge that is induced by an ionizing particle passing through a gasesous detector. Such distribution is highly dependent on the electric field in the gas medium and the gas mixture itself. Since I am studying eco-friendly gas mixture for a particular kind of the detector I wanted to compare the charge distribution that the detectors have when operated with different gas mixture. In this context, I initially though about overlapping the charge distributions, but there may be some features about the distribution that can easily get lost when plotting one histogram on top of the other.</p>
+<p>In addition, I wanted to produce some histograms with a style consistent to the other plots that I usually make, so I am using my custom matplotlib stylesheet, as explained in my <a href="../../posts/my-matplotlib-stylesheet/index.html">previous blog post</a></p>
+<p>In order to show the issue that I had to fight with, I have prepared a <code>.csv</code> file containing two columns: one colum represents the charge that will be plotted in the form of a histogram. The second column is categorical label indicating to which gas mixture the measured charge belongs to.</p>
+<p>Also, I often use <a href="https://seaborn.pydata.org/">seaborn</a> to help me produce these kind of plots.</p>
+<p>Let me start by showing the different charge distributions:</p>
+<div class="cell" data-execution_count="60">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;">as</span> plt</span>
+<span id="cb1-2"><span class="im" style="color: #00769E;">import</span> matplotlib <span class="im" style="color: #00769E;">as</span> mpl</span>
+<span id="cb1-3"><span class="im" style="color: #00769E;">import</span> seaborn <span class="im" style="color: #00769E;">as</span> sns</span>
+<span id="cb1-4"><span class="im" style="color: #00769E;">import</span> pandas <span class="im" style="color: #00769E;">as</span> pd</span>
+<span id="cb1-5"><span class="im" style="color: #00769E;">import</span> numpy <span class="im" style="color: #00769E;">as</span> np</span>
+<span id="cb1-6"></span>
+<span id="cb1-7">plt.style.use(<span class="st" style="color: #20794D;">'https://gitlab.cern.ch/-/snippets/2223/raw/master/rpcecogas.mplstyle'</span>)</span>
+<span id="cb1-8">df <span class="op" style="color: #5E5E5E;">=</span> pd.read_csv(<span class="st" style="color: #20794D;">'charge_distribution.csv'</span>, index_col<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>)</span>
+<span id="cb1-9"></span>
+<span id="cb1-10">df.head()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="60">
+
+<div>
+
+<table class="dataframe table table-sm table-striped">
+  <thead>
+    <tr>
+      <th></th>
+      <th>charge</th>
+      <th>label</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2.521321</td>
+      <td>Standard</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2.074056</td>
+      <td>Standard</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1.207791</td>
+      <td>Standard</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.663411</td>
+      <td>Standard</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.618327</td>
+      <td>Standard</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<p>If I try to plot a histogram of <code>charge</code> with a color based on the <code>label</code> category I get this:</p>
+<div class="cell" data-fig-label="fig-default-histogram" data-execution_count="61">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1">ax <span class="op" style="color: #5E5E5E;">=</span> sns.histplot(data<span class="op" style="color: #5E5E5E;">=</span>df, x<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'charge'</span>, hue<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, log_scale<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, </span>
+<span id="cb2-2">             stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'density'</span>, common_norm<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, element<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'step'</span>,</span>
+<span id="cb2-3">             bins<span class="op" style="color: #5E5E5E;">=</span>np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">200</span>), fill<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<span id="cb2-4">ax.get_legend().set_title(<span class="st" style="color: #20794D;">'Label'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://grigolet.github.io/posts/overlapping-densities-plots/index_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Charge distribution of different gas mixtures</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The above plot was made using the seaborn <code>histplot()</code> function, using a logarithmic scale on the x axis. In this particular case one can see that the blue distribution has a nice, single, bell shape, while the other three distributions, which represent gas mixtures with the addition of CO<img src="https://latex.codecogs.com/png.latex?_2"> to the standard gas mixture, have a more complex behaviour. Although it looks clear that with an increase of CO<img src="https://latex.codecogs.com/png.latex?_2"> the region with a charge higher than 20 a.u. is increasing, the behaviour on lower region is difficult to understand due to the overlapping lines, especially in the region around 2 a.u.</p>
+<p>The idea was then to try to make a ridge plot, where the the histograms are shifted of a fixed offest along the y-axis. In this case, my starting point was a plot made with seaborn, although there are <a href="https://matplotlib.org/matplotblog/posts/create-ridgeplots-in-matplotlib/">plain matplotlib solutions</a>. The <a href="https://seaborn.pydata.org/examples/kde_ridgeplot">seaborn documentation</a> on ridge plots suggests to use a <code>FacetGrid</code> object and make use of the method <code>FacetGrid.map</code> to use a seaborn drawing functions on top of the figure created by the <code>FacetGrid</code>. The <code>FacetGrid</code> object pass a <code>row</code> parameter which should contains the name of a column of the dataframe being used. The <code>row</code> parameter allows to create unique rows of plots depending on how many unique values the dataframe column has.</p>
+<p>In addition, I also want the lines to be colored differently depending on the label, so I will also make use of the <code>hue</code> parameter.</p>
+<p>By only using map I get this results:</p>
+<div class="cell" data-fig-label="fig-matplotlib-initial-ridgeplot" data-fig-caption="Using `FacetGrid` as a starting point for a ridge plot." data-execution_count="62">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1">g <span class="op" style="color: #5E5E5E;">=</span> sns.FacetGrid(data<span class="op" style="color: #5E5E5E;">=</span>df, hue<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, row<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, aspect<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, height<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;"># Use the seaborn histplot() function to create histograms</span></span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;"># for each row. In this case I am passing the same</span></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;"># arguments of the plot made before</span></span>
+<span id="cb3-5">g.<span class="bu" style="color: null;">map</span>(sns.histplot, <span class="st" style="color: #20794D;">'charge'</span>, log_scale<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, </span>
+<span id="cb3-6">             stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'density'</span>, common_norm<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, element<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'step'</span>,</span>
+<span id="cb3-7">             bins<span class="op" style="color: #5E5E5E;">=</span>np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">200</span>), fill<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="62">
+<pre><code>&lt;seaborn.axisgrid.FacetGrid at 0x7f3f93374550&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://grigolet.github.io/posts/overlapping-densities-plots/index_files/figure-html/cell-4-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>This plot can be considered as an improvement with respect to <strong>?@fig-default-histogram</strong> as it allows to clearly see the shape difference between the charge distributions. It is indeed possible to observe a a less sharp charge distribution in the last histogram (the red one) if compared to the previous one (the green house).</p>
+<p>The only downside of such a plot is its vertical space. There are axes frames, axes titles and ticks that eat up a significant amount of space. So in this case I would get rid of the top, bottom and left axes frames and titles, except for the last one:</p>
+<div class="cell" data-fig-label="fig-matplotlib-improved-ridgeplot" data-fig-caption="Removing axes frames" data-execution_count="85">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1">g <span class="op" style="color: #5E5E5E;">=</span> sns.FacetGrid(data<span class="op" style="color: #5E5E5E;">=</span>df, hue<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, row<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, aspect<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, height<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb5-2"><span class="co" style="color: #5E5E5E;"># Use the seaborn histplot() function to create histograms</span></span>
+<span id="cb5-3"><span class="co" style="color: #5E5E5E;"># for each row. In this case I am passing the same</span></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;"># arguments of the plot made before</span></span>
+<span id="cb5-5">g.<span class="bu" style="color: null;">map</span>(sns.histplot, <span class="st" style="color: #20794D;">'charge'</span>, log_scale<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, </span>
+<span id="cb5-6">             stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'density'</span>, common_norm<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, element<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'step'</span>,</span>
+<span id="cb5-7">             bins<span class="op" style="color: #5E5E5E;">=</span>np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">200</span>), fill<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<span id="cb5-8"><span class="co" style="color: #5E5E5E;"># Remove all left, top and right frames</span></span>
+<span id="cb5-9">g.despine(left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, bottom<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="85">
+<pre><code>&lt;seaborn.axisgrid.FacetGrid at 0x7f3f95d9da20&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="https://grigolet.github.io/posts/overlapping-densities-plots/index_files/figure-html/cell-5-output-2.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now I would like to remove the ticks on the sides, bottom and top as I did for the frames. To do this, I would set the ticks length to 0 and the tick labels to an empty list:</p>
+<div class="cell" data-fig-label="fig-matplotlib-improved-ridgeplot-no-ticks" data-fig-caption="Removing ticks" data-execution_count="92">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><span class="co" style="color: #5E5E5E;"># Adding a matplotlib rc_context to disable ticks</span></span>
+<span id="cb7-2">g <span class="op" style="color: #5E5E5E;">=</span> sns.FacetGrid(data<span class="op" style="color: #5E5E5E;">=</span>df, hue<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, row<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, aspect<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>, height<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">2</span>)</span>
+<span id="cb7-3"><span class="co" style="color: #5E5E5E;"># Use the seaborn histplot() function to create histograms</span></span>
+<span id="cb7-4"><span class="co" style="color: #5E5E5E;"># for each row. In this case I am passing the same</span></span>
+<span id="cb7-5"><span class="co" style="color: #5E5E5E;"># arguments of the plot made before</span></span>
+<span id="cb7-6">g.<span class="bu" style="color: null;">map</span>(sns.histplot, <span class="st" style="color: #20794D;">'charge'</span>, log_scale<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, </span>
+<span id="cb7-7">            stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'density'</span>, common_norm<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, element<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'step'</span>,</span>
+<span id="cb7-8">            bins<span class="op" style="color: #5E5E5E;">=</span>np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">200</span>), fill<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<span id="cb7-9"><span class="co" style="color: #5E5E5E;"># Remove all left, top and right frames</span></span>
+<span id="cb7-10">g.despine(left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, bottom<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb7-11"><span class="co" style="color: #5E5E5E;"># Manually removing ticks</span></span>
+<span id="cb7-12"><span class="cf" style="color: #003B4F;">for</span> ax <span class="kw" style="color: #003B4F;">in</span> g.axes.ravel()[:<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]:</span>
+<span id="cb7-13">    <span class="co" style="color: #5E5E5E;"># Remove ticks by settings their length to 0</span></span>
+<span id="cb7-14">    ax.tick_params(axis<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>, length<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>, which<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>)</span>
+<span id="cb7-15"></span>
+<span id="cb7-16"><span class="co" style="color: #5E5E5E;"># Use seaborn to remove y labels and titles</span></span>
+<span id="cb7-17">g.set_axis_labels(<span class="st" style="color: #20794D;">"Charge [pC]"</span>, <span class="st" style="color: #20794D;">""</span>)</span>
+<span id="cb7-18">g.set_titles(<span class="st" style="color: #20794D;">""</span>)</span>
+<span id="cb7-19"><span class="co" style="color: #5E5E5E;"># Remove y ticks from all axes</span></span>
+<span id="cb7-20">g.<span class="bu" style="color: null;">set</span>(yticklabels<span class="op" style="color: #5E5E5E;">=</span>[])</span>
+<span id="cb7-21"><span class="co" style="color: #5E5E5E;"># Remove the spines also on the last plot, except for the bottom one</span></span>
+<span id="cb7-22">last_ax <span class="op" style="color: #5E5E5E;">=</span> g.axes.flat[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb7-23">sns.despine(left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, bottom<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, ax<span class="op" style="color: #5E5E5E;">=</span>g.axes.flat[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>])</span>
+<span id="cb7-24"><span class="co" style="color: #5E5E5E;"># Use mpl apis to remove ticks</span></span>
+<span id="cb7-25">last_ax.tick_params(top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, right<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, which<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://grigolet.github.io/posts/overlapping-densities-plots/index_files/figure-html/cell-6-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Now, what is left is to get the distributions closer to each other and eventually add a label to each of them, indicating to which category they belong:</p>
+<div class="cell" data-fig-label="fig-matplotlib-improved-ridgeplot-final" data-fig-caption="Final ridge plot" data-execution_count="93">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="kw" style="color: #003B4F;">def</span> add_label(x, color, label):</span>
+<span id="cb8-2">    <span class="co" style="color: #5E5E5E;">"""Add a label to each mapped category"""</span></span>
+<span id="cb8-3">    ax <span class="op" style="color: #5E5E5E;">=</span> plt.gca()</span>
+<span id="cb8-4">    <span class="co" style="color: #5E5E5E;"># The position of the label depends on the figure size and layout.</span></span>
+<span id="cb8-5">    <span class="co" style="color: #5E5E5E;"># For this reason, the x and y coordinates may need to be set manually.</span></span>
+<span id="cb8-6">    ax.text(<span class="dv" style="color: #AD0000;">1</span>, <span class="fl" style="color: #AD0000;">.2</span>, label, color<span class="op" style="color: #5E5E5E;">=</span>color, fontsize<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">13</span>, fontweight<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'bold'</span>,</span>
+<span id="cb8-7">            ha<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"right"</span>, va<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">"center"</span>, transform<span class="op" style="color: #5E5E5E;">=</span>ax.transAxes)</span>
+<span id="cb8-8"></span>
+<span id="cb8-9"><span class="co" style="color: #5E5E5E;"># Minor adjustment on aspect and height: use a large aspect for broad</span></span>
+<span id="cb8-10"><span class="co" style="color: #5E5E5E;"># distributions and set height to 1 (this value depends also on the</span></span>
+<span id="cb8-11"><span class="co" style="color: #5E5E5E;"># matplotlib's dpi resolution)</span></span>
+<span id="cb8-12">g <span class="op" style="color: #5E5E5E;">=</span> sns.FacetGrid(data<span class="op" style="color: #5E5E5E;">=</span>df, hue<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, row<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'label'</span>, aspect<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">4</span>, height<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">1</span>)</span>
+<span id="cb8-13"></span>
+<span id="cb8-14">g.<span class="bu" style="color: null;">map</span>(sns.histplot, <span class="st" style="color: #20794D;">'charge'</span>, log_scale<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, </span>
+<span id="cb8-15">            stat<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'density'</span>, common_norm<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, element<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'step'</span>,</span>
+<span id="cb8-16">            bins<span class="op" style="color: #5E5E5E;">=</span>np.linspace(<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>, <span class="dv" style="color: #AD0000;">4</span>, <span class="dv" style="color: #AD0000;">200</span>), fill<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>)</span>
+<span id="cb8-17"></span>
+<span id="cb8-18">g.despine(left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, bottom<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>)</span>
+<span id="cb8-19"></span>
+<span id="cb8-20"><span class="cf" style="color: #003B4F;">for</span> ax <span class="kw" style="color: #003B4F;">in</span> g.axes.ravel()[:<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]:</span>
+<span id="cb8-21">    ax.tick_params(axis<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>, length<span class="op" style="color: #5E5E5E;">=</span><span class="dv" style="color: #AD0000;">0</span>, which<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>)</span>
+<span id="cb8-22">    </span>
+<span id="cb8-23"><span class="co" style="color: #5E5E5E;"># Map the label function to each 'hue' catgory of seaborn</span></span>
+<span id="cb8-24">g.<span class="bu" style="color: null;">map</span>(add_label, <span class="st" style="color: #20794D;">"label"</span>)</span>
+<span id="cb8-25"><span class="co" style="color: #5E5E5E;"># Make the subplots get close together by decreasing the horizontal space</span></span>
+<span id="cb8-26">g.fig.subplots_adjust(hspace<span class="op" style="color: #5E5E5E;">=-</span><span class="fl" style="color: #AD0000;">0.4</span>)</span>
+<span id="cb8-27"></span>
+<span id="cb8-28">g.set_titles(<span class="st" style="color: #20794D;">""</span>)</span>
+<span id="cb8-29">g.<span class="bu" style="color: null;">set</span>(yticklabels<span class="op" style="color: #5E5E5E;">=</span>[])</span>
+<span id="cb8-30"><span class="co" style="color: #5E5E5E;"># For some seaborn internal reason, the set_titles() function</span></span>
+<span id="cb8-31"><span class="co" style="color: #5E5E5E;"># should be called after the map function, otherwise the titles</span></span>
+<span id="cb8-32"><span class="co" style="color: #5E5E5E;"># won't be removed</span></span>
+<span id="cb8-33">g.set_axis_labels(<span class="st" style="color: #20794D;">"Charge [pC]"</span>, <span class="st" style="color: #20794D;">""</span>)</span>
+<span id="cb8-34">last_ax <span class="op" style="color: #5E5E5E;">=</span> g.axes.flat[<span class="op" style="color: #5E5E5E;">-</span><span class="dv" style="color: #AD0000;">1</span>]</span>
+<span id="cb8-35">sns.despine(left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">True</span>, bottom<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, ax<span class="op" style="color: #5E5E5E;">=</span>last_ax)</span>
+<span id="cb8-36">last_ax.tick_params(top<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, left<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, right<span class="op" style="color: #5E5E5E;">=</span><span class="va" style="color: #111111;">False</span>, which<span class="op" style="color: #5E5E5E;">=</span><span class="st" style="color: #20794D;">'both'</span>)</span>
+<span id="cb8-37"></span>
+<span id="cb8-38"><span class="co" style="color: #5E5E5E;"># Set a transparent facecolor, otherwise the white backround of a </span></span>
+<span id="cb8-39"><span class="co" style="color: #5E5E5E;"># subplot will cover the ones behind</span></span>
+<span id="cb8-40">g.<span class="bu" style="color: null;">set</span>(facecolor<span class="op" style="color: #5E5E5E;">=</span>[<span class="dv" style="color: #AD0000;">0</span>,<span class="dv" style="color: #AD0000;">0</span>,<span class="dv" style="color: #AD0000;">0</span>,<span class="dv" style="color: #AD0000;">0</span>])</span>
+<span id="cb8-41"><span class="co" style="color: #5E5E5E;"># Make the sublots closer by removing some horizontal space between</span></span>
+<span id="cb8-42"><span class="co" style="color: #5E5E5E;"># them</span></span>
+<span id="cb8-43">g.fig.subplots_adjust(hspace<span class="op" style="color: #5E5E5E;">=-</span><span class="fl" style="color: #AD0000;">0.3</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="https://grigolet.github.io/posts/overlapping-densities-plots/index_files/figure-html/cell-7-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Et voilà, the plot is ready. What should be mentioned is that in this case I have combined both seaborn and matplotlib’s API’s, although I’m pretty sure there is a cleaner way with matplotlib APIs only. For the code, there are few caveats that should be taken into account:</p>
+<ul>
+<li>The addition of a label is done by setting the coordinates relative to the subplots with hand-crafted values. I haven’t found yet a better solution;</li>
+<li>The addition of a label using seaborn’s <code>FacetGrid.map()</code> function should be done before setting titls and axes labels using seaborn <code>FacetGrid.set()</code>. I haven’t digged down to see why to be honest, but if one first sets the titles to <code>""</code> and later uses the <code>map()</code> function the titles are coming back.</li>
+<li>The subplots should have a transparent face color. My default stylesheet has a white facecolor. If I don’t change the facecolor, the subplots on the front will partially cover the ones in the back.</li>
+</ul>
+<p>Also, one can notice that this kind of plot is providing some easier way to compare different distributions when they have different skeweness and shapes.</p>
+</section>
+<section id="conclusions" class="level1">
+<h1>Conclusions</h1>
+<p>In this post I showed how I am using seaborn and matplotlib to create my own, publication-ready, ridge plot, which is at the end a simple overlapping of histograms with some additional styles applied. To sum up, the steps that I have applied to get this plot:</p>
+<ol type="1">
+<li>Despine everything if using seaborn</li>
+<li>Set the xtick length to 0 for all the axes except the last one</li>
+<li>Set all axes titles to “” and all <code>yticklabels</code> to an empty list</li>
+<li>Re apply despine to leave the bottom spines for the last axis</li>
+<li>Put back the bottom spine on the last axis using again <code>sns.despine()</code></li>
+<li>Remove ticks from top, left, right faces of the last axis</li>
+<li>Set the facecolor of the axes to be transparent</li>
+<li>Gets the subplots closer using <code>plt.subplots_adjust()</code> and a negative <code>hspace</code></li>
+</ol>
+<p>There may be a more straightforward way to do this and in that I case I would be glad to see it, but so far it is the only way I found to get a plot that does what I needed. I found this kind of visualization very interesting and a bit more easy to use in publications with respect to the ridge plots showed in other tutorials and documentations as it doesn’t have any fill color on the distribution, it’s consistent with the applied stylesheet and it is relatively uncluttured.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>python</category>
+  <category>matplotlib</category>
+  <category>plot</category>
+  <category>visualization</category>
+  <category>ridge-plot</category>
+  <guid>https://grigolet.github.io/posts/overlapping-densities-plots/index.html</guid>
+  <pubDate>Sun, 16 Oct 2022 22:00:00 GMT</pubDate>
+  <media:content url="https://grigolet.github.io/posts/overlapping-densities-plots/preview.png" medium="image" type="image/png" height="151" width="144"/>
+</item>
 <item>
   <title>Time Over Threshold in signal processing</title>
   <link>https://grigolet.github.io/posts/time-over-threshold-in-signals/index.html</link>
