@@ -917,23 +917,23 @@ font-style: inherit;">return</span> result</span><div class="code-annotation-gut
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-19" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-annotation="1" data-code-cell="annotated-cell-19">I defined a GET endpoint for <code>/alarms</code></span>
+<span data-code-lines="1" data-code-cell="annotated-cell-19" data-code-annotation="1">I defined a GET endpoint for <code>/alarms</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="4" data-code-annotation="2" data-code-cell="annotated-cell-19">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
+<span data-code-lines="4" data-code-cell="annotated-cell-19" data-code-annotation="2">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="5" data-code-annotation="3" data-code-cell="annotated-cell-19">The db object is the dependency that I have explained earlier</span>
+<span data-code-lines="5" data-code-cell="annotated-cell-19" data-code-annotation="3">The db object is the dependency that I have explained earlier</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="7" data-code-annotation="4" data-code-cell="annotated-cell-19">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
+<span data-code-lines="7" data-code-cell="annotated-cell-19" data-code-annotation="4">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="9" data-code-annotation="5" data-code-cell="annotated-cell-19">I am passing a query, selecting by id and using a placeholder to bind external values</span>
+<span data-code-lines="9" data-code-cell="annotated-cell-19" data-code-annotation="5">I am passing a query, selecting by id and using a placeholder to bind external values</span>
 </dd>
 </dl>
 <p>Moving now to the <code>/alarms</code> endpoint, this will be a bit more sophisticated: <a href="https://tabulator.info/docs/5.5/page#remote-response">in order to prepare the data to be consumed by Tabulator</a> we would need to accept the size of a page <code>size</code>, the number of the page we want to get <code>page</code>, and we should return a json with one key called <code>last_page</code> indicating the total number of pages and one key called <code>data</code> with the returned data. The code looks like this:</p>
@@ -1043,23 +1043,23 @@ font-style: inherit;">'data'</span>: alarms </span>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-20" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="4,5" data-code-annotation="1" data-code-cell="annotated-cell-20"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
+<span data-code-lines="4,5" data-code-cell="annotated-cell-20" data-code-annotation="1"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="10" data-code-annotation="2" data-code-cell="annotated-cell-20">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
+<span data-code-lines="10" data-code-cell="annotated-cell-20" data-code-annotation="2">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="11" data-code-annotation="3" data-code-cell="annotated-cell-20">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
+<span data-code-lines="11" data-code-cell="annotated-cell-20" data-code-annotation="3">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="13" data-code-annotation="4" data-code-cell="annotated-cell-20">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
+<span data-code-lines="13" data-code-cell="annotated-cell-20" data-code-annotation="4">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="15" data-code-annotation="5" data-code-cell="annotated-cell-20">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
+<span data-code-lines="15" data-code-cell="annotated-cell-20" data-code-annotation="5">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
 </dd>
 </dl>
 <p>If you look now what you get at <code>localhost:8000/alarms</code> you would see something like:</p>
@@ -2363,15 +2363,15 @@ font-style: inherit;">'data'</span>: alarms </span>
 <dl class="code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-29" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="11,12,13" data-code-annotation="1" data-code-cell="annotated-cell-29">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
+<span data-code-lines="11,12,13" data-code-cell="annotated-cell-29" data-code-annotation="1">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="19" data-code-annotation="2" data-code-cell="annotated-cell-29">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
+<span data-code-lines="19" data-code-cell="annotated-cell-29" data-code-annotation="2">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="23" data-code-annotation="3" data-code-cell="annotated-cell-29">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
+<span data-code-lines="23" data-code-cell="annotated-cell-29" data-code-annotation="3">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
 </dd>
 </dl>
 <p>And that’s it, now we have text filtering!</p>
@@ -3044,7 +3044,7 @@ font-style: inherit;">'data'</span>: alarms </span>
   <category>SQL</category>
   <guid>https://grigolet.github.io/posts/tabulator-sql-fastapi/index.html</guid>
   <pubDate>Fri, 22 Sep 2023 22:00:00 GMT</pubDate>
-  <media:content url="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png" medium="image" type="image/png" height="151" width="144"/>
+  <media:content url="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png" medium="image" type="image/png" height="78" width="144"/>
 </item>
 <item>
   <title>My take on overlapping densities (a.k.a. ridge) plots</title>

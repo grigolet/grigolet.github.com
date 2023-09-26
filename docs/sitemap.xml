@@ -2,34 +2,34 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://grigolet.github.io/about.html</loc>
-    <lastmod>2023-09-23T15:04:12.247Z</lastmod>
+    <lastmod>2023-09-26T20:16:15.874Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/a-post-with-jupyter-notebook/index.html</loc>
-    <lastmod>2023-09-23T15:04:10.540Z</lastmod>
+    <lastmod>2023-09-26T20:16:10.244Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/tabulator-sql-fastapi/index.html</loc>
-    <lastmod>2023-09-26T20:14:10.413Z</lastmod>
+    <lastmod>2023-09-26T20:16:07.788Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/time-over-threshold-in-signals/index.html</loc>
-    <lastmod>2023-09-23T15:04:05.104Z</lastmod>
+    <lastmod>2023-09-26T20:16:04.511Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/index.html</loc>
-    <lastmod>2023-09-26T20:14:12.573Z</lastmod>
+    <lastmod>2023-09-26T20:16:02.414Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/plots-with-multiple-y-axes/index.html</loc>
-    <lastmod>2023-09-23T15:04:06.267Z</lastmod>
+    <lastmod>2023-09-26T20:16:05.781Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/my-matplotlib-stylesheet/index.html</loc>
-    <lastmod>2023-09-23T15:04:09.484Z</lastmod>
+    <lastmod>2023-09-26T20:16:09.194Z</lastmod>
   </url>
   <url>
     <loc>https://grigolet.github.io/posts/overlapping-densities-plots/index.html</loc>
-    <lastmod>2023-09-23T15:04:11.867Z</lastmod>
+    <lastmod>2023-09-26T20:16:15.524Z</lastmod>
   </url>
 </urlset>
