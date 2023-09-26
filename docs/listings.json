@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/tabulator-sql-fastapi/index.html",
       "/posts/overlapping-densities-plots/index.html",
       "/posts/time-over-threshold-in-signals/index.html",
       "/posts/my-matplotlib-stylesheet/index.html",

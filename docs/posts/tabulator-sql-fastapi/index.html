@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-09-23">
+
+<title>G.R.’s Blog - Display data from a SQL source on the web with Tabulator and FastAPI</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.css" rel="stylesheet">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="G.R.’s Blog - Display data from a SQL source on the web with Tabulator and FastAPI">
+<meta property="og:description" content="With server side pagination and filtering">
+<meta property="og:image" content="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png">
+<meta property="og:site-name" content="G.R.'s Blog">
+<meta property="og:image:height" content="1102">
+<meta property="og:image:width" content="1049">
+<meta name="twitter:title" content="G.R.’s Blog - Display data from a SQL source on the web with Tabulator and FastAPI">
+<meta name="twitter:description" content="With server side pagination and filtering">
+<meta name="twitter:image" content="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png">
+<meta name="twitter:image-height" content="1102">
+<meta name="twitter:image-width" content="1049">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">G.R.’s Blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/grigolet" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://twitter.com/gianrigoletti" rel="" target=""><i class="bi bi-twitter" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Display data from a SQL source on the web with Tabulator and FastAPI</h1>
+            <p class="subtitle lead">With server side pagination and filtering</p>
+                                <div class="quarto-categories">
+                <div class="quarto-category">python</div>
+                <div class="quarto-category">web</div>
+                <div class="quarto-category">fastapi</div>
+                <div class="quarto-category">tabulator</div>
+                <div class="quarto-category">SQL</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 23, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a>
+  <ul class="collapse">
+  <li><a href="#alternative-tools" id="toc-alternative-tools" class="nav-link" data-scroll-target="#alternative-tools">Alternative tools</a></li>
+  </ul></li>
+  <li><a href="#setting-up-the-project" id="toc-setting-up-the-project" class="nav-link" data-scroll-target="#setting-up-the-project">Setting up the project</a></li>
+  <li><a href="#creating-the-initial-backend" id="toc-creating-the-initial-backend" class="nav-link" data-scroll-target="#creating-the-initial-backend">Creating the initial backend</a>
+  <ul class="collapse">
+  <li><a href="#create-a-database-and-populate-it-with-some-data" id="toc-create-a-database-and-populate-it-with-some-data" class="nav-link" data-scroll-target="#create-a-database-and-populate-it-with-some-data">Create a database and populate it with some data</a></li>
+  <li><a href="#sharing-the-app-settings-and-database-connection" id="toc-sharing-the-app-settings-and-database-connection" class="nav-link" data-scroll-target="#sharing-the-app-settings-and-database-connection">Sharing the app settings and database connection</a></li>
+  <li><a href="#implementing-the-endpoints" id="toc-implementing-the-endpoints" class="nav-link" data-scroll-target="#implementing-the-endpoints">Implementing the endpoints</a></li>
+  <li><a href="#setting-up-tabulator" id="toc-setting-up-tabulator" class="nav-link" data-scroll-target="#setting-up-tabulator">Setting up tabulator</a></li>
+  <li><a href="#adding-server-side-filtering" id="toc-adding-server-side-filtering" class="nav-link" data-scroll-target="#adding-server-side-filtering">Adding server side filtering</a></li>
+  <li><a href="#adding-date-filters" id="toc-adding-date-filters" class="nav-link" data-scroll-target="#adding-date-filters">Adding date filters</a></li>
+  </ul></li>
+  <li><a href="#conclusion-and-remarks" id="toc-conclusion-and-remarks" class="nav-link" data-scroll-target="#conclusion-and-remarks">Conclusion and remarks</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>At work we have an SQL database containing a list of alarms that are generated by different control systems. We usually receive Email and SMS notifications for that, but it’s not easy to get an overview of all the alarms. We decided then to create a simple web application that wraps the data on the database and allows people from the team to easily access it.</p>
+<p>When thinking about the web applications I wanted to have the following requirements:</p>
+<ul>
+<li>The alarms data should be only read, no modifications are required</li>
+<li>The alarms data should be loaded with server side pagination, since the number of rows in the DB are ~O(<span class="math inline">\(10^4\)</span>) and I don’t want to load them on the web page each time</li>
+<li>The data should be displayed on a table that allows for custom filtering. The only way to do filtering with server side pagination is for the table to send the filter queries on the backend and do some sort of server side filtering</li>
+<li>One of the columns should contains a link that open a page with all the details of the clicked alarm, like in a RESTful resource</li>
+</ul>
+<section id="alternative-tools" class="level2">
+<h2 class="anchored" data-anchor-id="alternative-tools">Alternative tools</h2>
+<p>I initially evaluated the possibility of using some python libraries like <a href="https://streamlit.io/">streamlit</a>, <a href="https://panel.holoviz.org/">panel</a>, <a href="https://wave.h2o.ai/">h2o-wave</a>, <a href="https://dash.plotly.com/">plotly’s dash</a>, each one with a set of pros and cons. I decided to not use them because I felt that although using a data table is pretty easy (panel and dash support the use of tabulator for example), the server side pagination and filtering was a bit cumbersome. In addition, integrating the application with a python ASGI server started to be a bit too complicated to the point that having a single framework seemed the cleanest solution to me.</p>
+<p>I have also considered few no-code tools that wrap any data around a web application. I have considered Apache’s <a href="https://superset.apache.org/">superset</a> which is a very powerful tool but it was probably an overkill. I have also though about using <a href="https://directus.io/">directus</a> which works pretty ok but it adds metadata tables on your db and the filtering on the frontend is a bit cumbersome.</p>
+<p>I ultimately decided to invest some time and go back to the basics of python web frameworks and vanilla javascript libraries. In the past I used <a href="https://fastapi.tiangolo.com/tutorial/query-params/">FastAPI</a> for a RESTful web application and I found it quite enjoyable, especially for its clear and extensive documentation. Since the project partially requires to serve data from an REST interface I decided to go for it and use it again.</p>
+<p>On the frontend I started googling for javascript data tables. I also saw that streamlit had a plugin for <a href="https://www.ag-grid.com/">AgGrid</a> which seemed like an extremely powerful library but that requires a quite pricy license, so I decided to discard it. Some other options included <a href="https://datatables.net/">DataTables</a> and <a href="https://gridjs.io/">GridJs</a> but I ultimately ended up trying <a href="https://tabulator.info/">tabulator</a> because I liked the documentation and the set of examples it provided.</p>
+</section>
+</section>
+<section id="setting-up-the-project" class="level1">
+<h1>Setting up the project</h1>
+<p>In this section I will detail the steps I’ve taken to create the web project. You can also have a look at the final example at the <a href="https://github.com/grigolet/tabulator-sql-fastapi-demo">demo repo on github</a> for the final result.</p>
+<p><strong>DISCLAIMER</strong> <em>I am not a web developer, I mainly work with gas systems and particle detectors. As such, my code may not be entirely safe and optimized for needs other than mine. Read, learn and use at your own risk 🤌</em></p>
+<p>First thing, create a dedicated folder in which you can install your python virtual environment and application.</p>
+<div class="sourceCode" id="cb1" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a><span class="fu">mkdir</span> tabulator-sql-fastapi-demo </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We will work inside the <code>tabulator-sql-fastapi-demo</code> folder from now on. Create a virtual environment and activate it</p>
+<div class="sourceCode" id="cb2" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="bu">cd</span> tabulator-sql-fastapi-demo </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a><span class="ex">python</span> <span class="at">-m</span> venv venv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1"></a><span class="bu">source</span> venv/bin/activate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Create an <code>app</code> folder where we will put our code</p>
+<div class="sourceCode" id="cb5" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1"></a><span class="fu">mkdir</span> app</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Let’s create a <code>requirements.txt</code> file and start putting FastAPI with all the optional dependencies:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>requirements.txt</strong></pre>
+</div>
+<div class="sourceCode" id="cb6" data-code-line-numbers=""><pre class="sourceCode numberSource text number-lines code-with-copy"><code class="sourceCode"><span id="cb6-1"><a href="#cb6-1"></a>fastapi[all]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="creating-the-initial-backend" class="level1">
+<h1>Creating the initial backend</h1>
+<p>Let’s start by creating a server with three endpoints: a main one served on <code>/</code>, one called <code>/alarm</code> which will serve as a resource for a single alarm and an <code>/alarms</code> one which will serve multiple alarms</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb7" data-code-line-numbers=""><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request</span>
+<span id="cb7-2"><a href="#cb7-2"></a></span>
+<span id="cb7-3"><a href="#cb7-3"></a>app <span class="op">=</span> FastAPI()</span>
+<span id="cb7-4"><a href="#cb7-4"></a></span>
+<span id="cb7-5"><a href="#cb7-5"></a></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="at">@app.get</span>(<span class="st">"/"</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="cf">async</span> <span class="kw">def</span> home(request: Request):</span>
+<span id="cb7-8"><a href="#cb7-8"></a>    <span class="cf">return</span> {<span class="st">"page"</span>: <span class="st">"home"</span>}</span>
+<span id="cb7-9"><a href="#cb7-9"></a></span>
+<span id="cb7-10"><a href="#cb7-10"></a></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="at">@app.get</span>(<span class="st">"/alarm"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="cf">async</span> <span class="kw">def</span> home(request: Request):</span>
+<span id="cb7-13"><a href="#cb7-13"></a>    <span class="cf">return</span> {<span class="st">"page"</span>: <span class="st">"alarm"</span>}</span>
+<span id="cb7-14"><a href="#cb7-14"></a></span>
+<span id="cb7-15"><a href="#cb7-15"></a></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="at">@app.get</span>(<span class="st">"/alarms"</span>)</span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="cf">async</span> <span class="kw">def</span> home(request: Request):</span>
+<span id="cb7-18"><a href="#cb7-18"></a>    <span class="cf">return</span> {<span class="st">"page"</span>: <span class="st">"alarms"</span>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Run the main application:</p>
+<div class="sourceCode" id="cb8" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1"></a><span class="ex">uvicorn</span> app.main:app <span class="at">--reload</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>If you open your web browser at the link mentioned by <code>uvicorn</code> you should get the json response for each of the endpoint defined, e.g.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>http://127.0.0.1:8000/alarms</strong></pre>
+</div>
+<div class="sourceCode" id="cb9" data-code-line-numbers=""><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb9-1"><a href="#cb9-1"></a><span class="fu">{</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="dt">"page"</span><span class="fu">:</span> <span class="st">"alarms"</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="create-a-database-and-populate-it-with-some-data" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-database-and-populate-it-with-some-data">Create a database and populate it with some data</h2>
+<p>For simplicity I am going to use sqlite, but any popular SQL database should work fine. Note that I am not using any ORM to keep it as simple as possible. In this example, the database will consists of a single table <code>alarms</code> with the following columns:</p>
+<ul>
+<li><code>id</code></li>
+<li><code>system</code></li>
+<li><code>timestamp</code></li>
+<li><code>category</code></li>
+<li><code>text</code></li>
+</ul>
+<p>We can create a file in the <code>app</code> folder to insert some simple synthetic data:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/db.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb10" data-code-line-numbers=""><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="im">import</span> sqlite3</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="im">import</span> random</span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="im">from</span> datetime <span class="im">import</span> datetime, timedelta</span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="im">import</span> sys</span>
+<span id="cb10-5"><a href="#cb10-5"></a></span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="kw">def</span> create_db(db: <span class="bu">str</span>, table: <span class="bu">str</span>):</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(db)</span>
+<span id="cb10-9"><a href="#cb10-9"></a>    cur <span class="op">=</span> conn.cursor()</span>
+<span id="cb10-10"><a href="#cb10-10"></a>    cur.execute(<span class="ss">f"DROP TABLE IF EXISTS </span><span class="sc">{</span>table<span class="sc">}</span><span class="ss">;"</span>)</span>
+<span id="cb10-11"><a href="#cb10-11"></a>    cur.execute(<span class="ss">f"""CREATE TABLE </span><span class="sc">{</span>table<span class="sc">}</span><span class="ss">(</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="ss">        id integer primary key autoincrement, </span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="ss">        system, timestamp DATETIME, category, text);"""</span>)</span>
+<span id="cb10-14"><a href="#cb10-14"></a>    conn.commit()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function above will create a table <code>alarms</code> on the provided sqlite db filepath. Next, we can create a function to generate data</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/db.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb11" data-code-line-numbers=""><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a>...</span>
+<span id="cb11-2"><a href="#cb11-2"></a></span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="kw">def</span> generate_data(n: <span class="bu">int</span>):</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    systems <span class="op">=</span> [<span class="st">"ALITPC"</span>, <span class="st">"ALITRD"</span>, <span class="st">"ALITOF"</span>, <span class="st">"ATLRPC"</span>, <span class="st">"ATLTGC"</span>, </span>
+<span id="cb11-5"><a href="#cb11-5"></a>        <span class="st">"ATLMDT"</span>, <span class="st">"CMSDT"</span>, <span class="st">"CMSRPC"</span>, <span class="st">"CMSCSC"</span>, <span class="st">"LHBRI1"</span>, <span class="st">"LHBRI2"</span>, <span class="st">"LHBMWP"</span>]</span>
+<span id="cb11-6"><a href="#cb11-6"></a>    categories <span class="op">=</span> [<span class="st">"unProcessAlarm"</span>, <span class="st">"unProcessWarning"</span>, <span class="st">"PLCAlarm"</span>, <span class="st">"PGSAlarm"</span>]</span>
+<span id="cb11-7"><a href="#cb11-7"></a>    messages <span class="op">=</span> [<span class="st">"Value outside range"</span>, <span class="st">"Bad Communication"</span>, <span class="st">"Connection issues"</span>]</span>
+<span id="cb11-8"><a href="#cb11-8"></a>    now <span class="op">=</span> datetime.now()</span>
+<span id="cb11-9"><a href="#cb11-9"></a>    last_year <span class="op">=</span> now <span class="op">-</span> timedelta(days<span class="op">=</span><span class="dv">365</span>)</span>
+<span id="cb11-10"><a href="#cb11-10"></a>    random_data <span class="op">=</span> []</span>
+<span id="cb11-11"><a href="#cb11-11"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n):</span>
+<span id="cb11-12"><a href="#cb11-12"></a>        random_system <span class="op">=</span> random.choice(systems)</span>
+<span id="cb11-13"><a href="#cb11-13"></a>        random_category <span class="op">=</span> random.choice(categories)</span>
+<span id="cb11-14"><a href="#cb11-14"></a>        random_epoch <span class="op">=</span> random.randrange(</span>
+<span id="cb11-15"><a href="#cb11-15"></a>            <span class="bu">int</span>(last_year.timestamp()), <span class="bu">int</span>(now.timestamp())</span>
+<span id="cb11-16"><a href="#cb11-16"></a>        )</span>
+<span id="cb11-17"><a href="#cb11-17"></a>        random_timestamp <span class="op">=</span> datetime.fromtimestamp(random_epoch)</span>
+<span id="cb11-18"><a href="#cb11-18"></a>        random_messages <span class="op">=</span> random.choice(messages)</span>
+<span id="cb11-19"><a href="#cb11-19"></a>        random_text <span class="op">=</span> <span class="ss">f"""</span><span class="sc">{</span>random_timestamp<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>random_system<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>random_category<span class="sc">}</span><span class="ss"> - </span><span class="sc">{</span>random_messages<span class="sc">}</span><span class="ss">"""</span></span>
+<span id="cb11-20"><a href="#cb11-20"></a>        random_data.append(</span>
+<span id="cb11-21"><a href="#cb11-21"></a>            (random_system, random_timestamp, random_category, random_text)</span>
+<span id="cb11-22"><a href="#cb11-22"></a>        )</span>
+<span id="cb11-23"><a href="#cb11-23"></a>    <span class="cf">return</span> random_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This function is randomly sampling from a sequence of items to create unique rows. Also, a random timestamp is created by selecting a random value of epoch seconds between the current timestamp and the timestamp - 365 days.</p>
+<p>We can then make a small function to insert the data in the database</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/db.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb12" data-code-line-numbers=""><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a>...</span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="kw">def</span> insert_data(db: <span class="bu">str</span>, table: <span class="bu">str</span>, data: <span class="bu">list</span>[<span class="bu">tuple</span>]):</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    <span class="co">"""Insert data in the table"""</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(db)</span>
+<span id="cb12-6"><a href="#cb12-6"></a>    cur <span class="op">=</span> conn.cursor()</span>
+<span id="cb12-7"><a href="#cb12-7"></a>    cur.executemany(<span class="ss">f"INSERT INTO alarms VALUES (NULL, ?, ?, ?, ?)"</span>, data)</span>
+<span id="cb12-8"><a href="#cb12-8"></a>    conn.commit()</span>
+<span id="cb12-9"><a href="#cb12-9"></a>    cur.close()</span>
+<span id="cb12-10"><a href="#cb12-10"></a>    conn.close()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that I have placed <code>NULL</code> because I let the <code>id</code> column autoincrement by itself.</p>
+<p>Finally, we can put the pieces together and run all the functions:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/db.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb13" data-code-line-numbers=""><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a>...</span>
+<span id="cb13-2"><a href="#cb13-2"></a></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb13-4"><a href="#cb13-4"></a>    random_data <span class="op">=</span> generate_data(n<span class="op">=</span><span class="dv">10_000</span>)</span>
+<span id="cb13-5"><a href="#cb13-5"></a>    create_db(db<span class="op">=</span><span class="st">"db.sqlite"</span>, table<span class="op">=</span><span class="st">"alarms"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    insert_data(db<span class="op">=</span><span class="st">"db.sqlite"</span>, table<span class="op">=</span><span class="st">"alarms"</span>, data<span class="op">=</span>random_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The database can be filled by calling the <code>db.py</code> file:</p>
+<div class="sourceCode" id="cb14" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1"></a><span class="bu">cd</span> app <span class="kw">&amp;&amp;</span> <span class="ex">python</span> db.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>We can verify that the <code>alarms</code> table is filled by running a simple query using the <code>sqlite3</code> cli:</p>
+<div class="sourceCode" id="cb15" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1"></a><span class="ex">$</span> sqlite3 db.sqlite <span class="at">-cmd</span> <span class="st">".headers on"</span> <span class="st">"SELECT * FROM alarms LIMIT 5"</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="fu">id</span><span class="kw">|</span><span class="ex">system</span><span class="kw">|</span><span class="ex">timestamp</span><span class="kw">|</span><span class="ex">category</span><span class="kw">|</span><span class="ex">text</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="ex">1</span><span class="kw">|</span><span class="ex">ATLTGC</span><span class="kw">|</span><span class="ex">2023-02-19</span> 10:05:04<span class="kw">|</span><span class="ex">unProcessWarning</span><span class="kw">|</span><span class="ex">2023-02-19</span> 10:05:04 <span class="at">-</span> ATLTGC <span class="at">-</span> unProcessWarning <span class="at">-</span> Connection issues</span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="ex">2</span><span class="kw">|</span><span class="ex">LHBRI2</span><span class="kw">|</span><span class="ex">2023-01-18</span> 19:44:03<span class="kw">|</span><span class="ex">unProcessWarning</span><span class="kw">|</span><span class="ex">2023-01-18</span> 19:44:03 <span class="at">-</span> LHBRI2 <span class="at">-</span> unProcessWarning <span class="at">-</span> Value outside range</span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="ex">3</span><span class="kw">|</span><span class="ex">ALITPC</span><span class="kw">|</span><span class="ex">2023-07-17</span> 00:46:08<span class="kw">|</span><span class="ex">PLCAlarm</span><span class="kw">|</span><span class="ex">2023-07-17</span> 00:46:08 <span class="at">-</span> ALITPC <span class="at">-</span> PLCAlarm <span class="at">-</span> Bad Communication</span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="ex">4</span><span class="kw">|</span><span class="ex">CMSCSC</span><span class="kw">|</span><span class="ex">2023-01-18</span> 03:57:57<span class="kw">|</span><span class="ex">unProcessWarning</span><span class="kw">|</span><span class="ex">2023-01-18</span> 03:57:57 <span class="at">-</span> CMSCSC <span class="at">-</span> unProcessWarning <span class="at">-</span> Bad Communication</span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="ex">5</span><span class="kw">|</span><span class="ex">CMSRPC</span><span class="kw">|</span><span class="ex">2022-12-05</span> 04:28:17<span class="kw">|</span><span class="ex">PLCAlarm</span><span class="kw">|</span><span class="ex">2022-12-05</span> 04:28:17 <span class="at">-</span> CMSRPC <span class="at">-</span> PLCAlarm <span class="at">-</span> Value outside range</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="sharing-the-app-settings-and-database-connection" class="level2">
+<h2 class="anchored" data-anchor-id="sharing-the-app-settings-and-database-connection">Sharing the app settings and database connection</h2>
+<p>Before implementing the endpoints, it should be noted that the database could be accessed by different users and through different sessions. We could create a single session for the db that will get reused by the different server connections. In FastAPI, one can do this through its dependency injection system. First, we can create a class representing the settings to connect to the db:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb16" data-code-line-numbers="4,8,9,10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request, Query, Depends</span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="im">from</span> typing <span class="im">import</span> Annotated</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="im">import</span> sqlite3</span>
+<span id="cb16-4"><a href="#cb16-4"></a><span class="im">from</span> pydantic_settings <span class="im">import</span> BaseSettings, SettingsConfigDict </span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb16-6"><a href="#cb16-6"></a></span>
+<span id="cb16-7"><a href="#cb16-7"></a></span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="kw">class</span> Settings(BaseSettings): </span>
+<span id="cb16-9"><a href="#cb16-9"></a>    model_config <span class="op">=</span> SettingsConfigDict(env_file<span class="op">=</span><span class="st">".env"</span>) </span>
+<span id="cb16-10"><a href="#cb16-10"></a>    db_path: Path <span class="op">=</span> <span class="st">'app/db.sqlite'</span> </span>
+<span id="cb16-11"><a href="#cb16-11"></a></span>
+<span id="cb16-12"><a href="#cb16-12"></a></span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="cf">async</span> <span class="kw">def</span> get_settings():</span>
+<span id="cb16-14"><a href="#cb16-14"></a>    <span class="cf">yield</span> Settings()</span>
+<span id="cb16-15"><a href="#cb16-15"></a></span>
+<span id="cb16-16"><a href="#cb16-16"></a></span>
+<span id="cb16-17"><a href="#cb16-17"></a><span class="cf">async</span> <span class="kw">def</span> get_db(settings: Annotated[Settings, Depends(get_settings)]): </span>
+<span id="cb16-18"><a href="#cb16-18"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(settings.db_path) </span>
+<span id="cb16-19"><a href="#cb16-19"></a>    <span class="cf">try</span>: </span>
+<span id="cb16-20"><a href="#cb16-20"></a>        <span class="cf">yield</span> conn </span>
+<span id="cb16-21"><a href="#cb16-21"></a>    <span class="cf">finally</span>: </span>
+<span id="cb16-22"><a href="#cb16-22"></a>        conn.close() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This class is based on pydantics and will allow to read the database from an <code>.env</code> file or environmental variable <code>DB_PATH</code>. By default we put <code>db.sqlite</code>, but pydantic will also check that the path is a valid path since we defined its type to be a python’s <code>pathlib.Path</code>.</p>
+<p>Then, we can create a dependency function that will yield our settings. This is the mechanism that FastAPI uses to defined dependencies that will be reused throughout the application.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb17" data-code-line-numbers="13,14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request, Query, Depends</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="im">from</span> typing <span class="im">import</span> Annotated</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="im">import</span> sqlite3</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="im">from</span> pydantic_settings <span class="im">import</span> BaseSettings, SettingsConfigDict </span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb17-6"><a href="#cb17-6"></a></span>
+<span id="cb17-7"><a href="#cb17-7"></a></span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="kw">class</span> Settings(BaseSettings): </span>
+<span id="cb17-9"><a href="#cb17-9"></a>    model_config <span class="op">=</span> SettingsConfigDict(env_file<span class="op">=</span><span class="st">".env"</span>) </span>
+<span id="cb17-10"><a href="#cb17-10"></a>    db_path: Path <span class="op">=</span> <span class="st">'app/db.sqlite'</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a></span>
+<span id="cb17-12"><a href="#cb17-12"></a></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="cf">async</span> <span class="kw">def</span> get_settings(): </span>
+<span id="cb17-14"><a href="#cb17-14"></a>    <span class="cf">yield</span> Settings() </span>
+<span id="cb17-15"><a href="#cb17-15"></a></span>
+<span id="cb17-16"><a href="#cb17-16"></a></span>
+<span id="cb17-17"><a href="#cb17-17"></a><span class="cf">async</span> <span class="kw">def</span> get_db(settings: Annotated[Settings, Depends(get_settings)]): </span>
+<span id="cb17-18"><a href="#cb17-18"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(settings.db_path) </span>
+<span id="cb17-19"><a href="#cb17-19"></a>    <span class="cf">try</span>: </span>
+<span id="cb17-20"><a href="#cb17-20"></a>        <span class="cf">yield</span> conn </span>
+<span id="cb17-21"><a href="#cb17-21"></a>    <span class="cf">finally</span>: </span>
+<span id="cb17-22"><a href="#cb17-22"></a>        conn.close() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we create another dependency, which will return the connection object to the database:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb18" data-code-line-numbers="17,18,19,20,21,22"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request, Query, Depends</span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="im">from</span> typing <span class="im">import</span> Annotated</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="im">import</span> sqlite3</span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="im">from</span> pydantic_settings <span class="im">import</span> BaseSettings, SettingsConfigDict </span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb18-6"><a href="#cb18-6"></a></span>
+<span id="cb18-7"><a href="#cb18-7"></a></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="kw">class</span> Settings(BaseSettings): </span>
+<span id="cb18-9"><a href="#cb18-9"></a>    model_config <span class="op">=</span> SettingsConfigDict(env_file<span class="op">=</span><span class="st">".env"</span>) </span>
+<span id="cb18-10"><a href="#cb18-10"></a>    db_path: Path <span class="op">=</span> <span class="st">'app/db.sqlite'</span></span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a></span>
+<span id="cb18-13"><a href="#cb18-13"></a><span class="cf">async</span> <span class="kw">def</span> get_settings():</span>
+<span id="cb18-14"><a href="#cb18-14"></a>    <span class="cf">yield</span> Settings()</span>
+<span id="cb18-15"><a href="#cb18-15"></a></span>
+<span id="cb18-16"><a href="#cb18-16"></a></span>
+<span id="cb18-17"><a href="#cb18-17"></a><span class="cf">async</span> <span class="kw">def</span> get_db(settings: Annotated[Settings, Depends(get_settings)]): </span>
+<span id="cb18-18"><a href="#cb18-18"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(settings.db_path) </span>
+<span id="cb18-19"><a href="#cb18-19"></a>    <span class="cf">try</span>: </span>
+<span id="cb18-20"><a href="#cb18-20"></a>        <span class="cf">yield</span> conn </span>
+<span id="cb18-21"><a href="#cb18-21"></a>    <span class="cf">finally</span>: </span>
+<span id="cb18-22"><a href="#cb18-22"></a>        conn.close() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can read more about dependency injection on <a href="https://fastapi.tiangolo.com/tutorial/dependencies/">FastAPI documentation</a> but from my understanding the <code>get_db</code> is a dependency that requires another dependency and declares it by using the <code>Depends</code> function.</p>
+</section>
+<section id="implementing-the-endpoints" class="level2">
+<h2 class="anchored" data-anchor-id="implementing-the-endpoints">Implementing the endpoints</h2>
+<p>We now want to be able to fetch the database rows from the <code>/alarm</code> endpoint and the <code>/alarms</code> one. The <code>/alarm</code> endpoint should have a mandatory query parameter which will be the <code>id</code>. The <code>/alarms</code> should instead support pagination, i.e.&nbsp;it should be able to receive two parameters <code>page</code>, which should indicate which page we want to retrieve and <code>size</code> which indicates the amount of rows per page.</p>
+<p>In the <code>main.py</code>, the endpoint for <code>/alarm</code> would look like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-19" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-19-1" class="code-annotation-target"><a href="#annotated-cell-19-1"></a><span class="at">@app.get</span>(<span class="st">"/alarm"</span>)</span>
+<span id="annotated-cell-19-2"><a href="#annotated-cell-19-2"></a><span class="cf">async</span> <span class="kw">def</span> alarm(</span>
+<span id="annotated-cell-19-3"><a href="#annotated-cell-19-3"></a>    request: Request, </span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-19-4" class="code-annotation-target"><a href="#annotated-cell-19-4"></a>    <span class="bu">id</span>: Annotated[<span class="bu">int</span>, Query()],</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-19-5" class="code-annotation-target"><a href="#annotated-cell-19-5"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db),</span>
+<span id="annotated-cell-19-6"><a href="#annotated-cell-19-6"></a>):</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-19-7" class="code-annotation-target"><a href="#annotated-cell-19-7"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<span id="annotated-cell-19-8"><a href="#annotated-cell-19-8"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-19-9" class="code-annotation-target"><a href="#annotated-cell-19-9"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms WHERE id = ?"</span>, (<span class="bu">id</span>, ))</span>
+<span id="annotated-cell-19-10"><a href="#annotated-cell-19-10"></a>    result <span class="op">=</span> cursor.fetchone()</span>
+<span id="annotated-cell-19-11"><a href="#annotated-cell-19-11"></a>    <span class="cf">return</span> result</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-19" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="1" data-code-annotation="1" data-code-cell="annotated-cell-19">I defined a GET endpoint for <code>/alarms</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-19" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="4" data-code-annotation="2" data-code-cell="annotated-cell-19">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
+</dd>
+<dt data-target-cell="annotated-cell-19" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="5" data-code-annotation="3" data-code-cell="annotated-cell-19">The db object is the dependency that I have explained earlier</span>
+</dd>
+<dt data-target-cell="annotated-cell-19" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-lines="7" data-code-annotation="4" data-code-cell="annotated-cell-19">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
+</dd>
+<dt data-target-cell="annotated-cell-19" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-lines="9" data-code-annotation="5" data-code-cell="annotated-cell-19">I am passing a query, selecting by id and using a placeholder to bind external values</span>
+</dd>
+</dl>
+<p>Moving now to the <code>/alarms</code> endpoint, this will be a bit more sophisticated: <a href="https://tabulator.info/docs/5.5/page#remote-response">in order to prepare the data to be consumed by Tabulator</a> we would need to accept the size of a page <code>size</code>, the number of the page we want to get <code>page</code>, and we should return a json with one key called <code>last_page</code> indicating the total number of pages and one key called <code>data</code> with the returned data. The code looks like this:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-20" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-20-1"><a href="#annotated-cell-20-1"></a><span class="at">@app.get</span>(<span class="st">"/alarms"</span>)</span>
+<span id="annotated-cell-20-2"><a href="#annotated-cell-20-2"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
+<span id="annotated-cell-20-3"><a href="#annotated-cell-20-3"></a>    request: Request,</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-20-4" class="code-annotation-target"><a href="#annotated-cell-20-4"></a>    page: Annotated[<span class="bu">int</span>, Query(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="annotated-cell-20-5"><a href="#annotated-cell-20-5"></a>    size: Annotated[<span class="bu">int</span>, Query(lt<span class="op">=</span><span class="dv">100</span>)] <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="annotated-cell-20-6"><a href="#annotated-cell-20-6"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db) </span>
+<span id="annotated-cell-20-7"><a href="#annotated-cell-20-7"></a>):</span>
+<span id="annotated-cell-20-8"><a href="#annotated-cell-20-8"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<span id="annotated-cell-20-9"><a href="#annotated-cell-20-9"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-20-10" class="code-annotation-target"><a href="#annotated-cell-20-10"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-20-11" class="code-annotation-target"><a href="#annotated-cell-20-11"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) FROM alarms"</span>)</span>
+<span id="annotated-cell-20-12"><a href="#annotated-cell-20-12"></a>    n_rows <span class="op">=</span> cursor.fetchone()[<span class="st">'count'</span>]</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-20-13" class="code-annotation-target"><a href="#annotated-cell-20-13"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
+<span id="annotated-cell-20-14"><a href="#annotated-cell-20-14"></a>    </span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-20-15" class="code-annotation-target"><a href="#annotated-cell-20-15"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms LIMIT ? OFFSET ?"</span>, (size, offset))</span>
+<span id="annotated-cell-20-16"><a href="#annotated-cell-20-16"></a>    alarms <span class="op">=</span> cursor.fetchall()</span>
+<span id="annotated-cell-20-17"><a href="#annotated-cell-20-17"></a>    <span class="cf">return</span> {</span>
+<span id="annotated-cell-20-18"><a href="#annotated-cell-20-18"></a>        <span class="st">'last_page'</span>: n_pages,</span>
+<span id="annotated-cell-20-19"><a href="#annotated-cell-20-19"></a>        <span class="st">'data'</span>: alarms </span>
+<span id="annotated-cell-20-20"><a href="#annotated-cell-20-20"></a>    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-20" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="4,5" data-code-annotation="1" data-code-cell="annotated-cell-20"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
+</dd>
+<dt data-target-cell="annotated-cell-20" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="10" data-code-annotation="2" data-code-cell="annotated-cell-20">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
+</dd>
+<dt data-target-cell="annotated-cell-20" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="11" data-code-annotation="3" data-code-cell="annotated-cell-20">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
+</dd>
+<dt data-target-cell="annotated-cell-20" data-target-annotation="4">4</dt>
+<dd>
+<span data-code-lines="13" data-code-annotation="4" data-code-cell="annotated-cell-20">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
+</dd>
+<dt data-target-cell="annotated-cell-20" data-target-annotation="5">5</dt>
+<dd>
+<span data-code-lines="15" data-code-annotation="5" data-code-cell="annotated-cell-20">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
+</dd>
+</dl>
+<p>If you look now what you get at <code>localhost:8000/alarms</code> you would see something like:</p>
+<div class="sourceCode" id="cb19" data-code-line-numbers=""><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb19-1"><a href="#cb19-1"></a><span class="er">//</span> <span class="er">http://127.0.0.1:8000/alarms</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="fu">{</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a>  <span class="dt">"last_page"</span><span class="fu">:</span> <span class="dv">100</span><span class="fu">,</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a>  <span class="dt">"data"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a>    <span class="ot">[</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a>      <span class="dv">1</span><span class="ot">,</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a>      <span class="st">"CMSCSC"</span><span class="ot">,</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a>      <span class="st">"2023-08-28 12:02:43"</span><span class="ot">,</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a>      <span class="st">"unProcessWarning"</span><span class="ot">,</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a>      <span class="st">"2023-08-28 12:02:43 - CMSCSC - unProcessWarning - Bad Communication"</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a>    <span class="ot">],</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a>    <span class="er">//</span> <span class="er">...</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="er">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="setting-up-tabulator" class="level2">
+<h2 class="anchored" data-anchor-id="setting-up-tabulator">Setting up tabulator</h2>
+<p>Now we can create a home page and setting up tabulator. We can start by defining an <code>index.html</code> file which will be returned by FastAPI when visiting <code>/</code>. We can create the file inside a <code>templates</code> folder and serve it as a <code>jinja</code> template in case we would need to add some custom logic later.</p>
+<ul>
+<li>Create the templates folder:</li>
+</ul>
+<div class="sourceCode" id="cb20" data-code-line-numbers=""><pre class="sourceCode numberSource sh number-lines code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1"></a><span class="fu">mkdir</span> app/templates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Add and <code>index.html</code> file inside the folder:</li>
+</ul>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/templates/index.html</strong></pre>
+</div>
+<div class="sourceCode" id="cb21" data-code-line-numbers=""><pre class="sourceCode numberSource html number-lines code-with-copy"><code class="sourceCode html"><span id="cb21-1"><a href="#cb21-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a>    <span class="kw">&lt;title&gt;</span>Alarms<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a>    <span class="kw">&lt;style&gt;</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a>        body {</span>
+<span id="cb21-7"><a href="#cb21-7"></a>            <span class="kw">font-family</span>: Arial<span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a>            <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a>            <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>            <span class="kw">background-color</span>: <span class="cn">#f0f0f0</span><span class="op">;</span></span>
+<span id="cb21-11"><a href="#cb21-11"></a>        }</span>
+<span id="cb21-12"><a href="#cb21-12"></a>        h1 {</span>
+<span id="cb21-13"><a href="#cb21-13"></a>            <span class="kw">color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+<span id="cb21-14"><a href="#cb21-14"></a>            <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>            <span class="kw">padding</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb21-16"><a href="#cb21-16"></a>        }</span>
+<span id="cb21-17"><a href="#cb21-17"></a>    <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb21-18"><a href="#cb21-18"></a><span class="kw">&lt;/head&gt;</span></span>
+<span id="cb21-19"><a href="#cb21-19"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb21-20"><a href="#cb21-20"></a>    <span class="kw">&lt;h1&gt;</span>Alarms list<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb21-21"><a href="#cb21-21"></a>    <span class="kw">&lt;div</span> <span class="er">id</span><span class="ot">=</span><span class="st">"alarms-table"</span><span class="kw">&gt;&lt;/div&gt;</span></span>
+<span id="cb21-22"><a href="#cb21-22"></a><span class="kw">&lt;/body&gt;</span></span>
+<span id="cb21-23"><a href="#cb21-23"></a><span class="kw">&lt;/html&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>I have added a bare minimum amount of CSS to have a gray background and the title centered. We can now serve the file from FastAPI. To do so, we need to change the <code>main.py</code> file</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb22" data-code-line-numbers="2,27,30,31,32"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request, Query, Depends, Body</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="im">from</span> fastapi.templating <span class="im">import</span> Jinja2Templates </span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="im">from</span> typing <span class="im">import</span> Annotated</span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="im">import</span> sqlite3</span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="im">from</span> pydantic_settings <span class="im">import</span> BaseSettings, SettingsConfigDict</span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb22-7"><a href="#cb22-7"></a></span>
+<span id="cb22-8"><a href="#cb22-8"></a></span>
+<span id="cb22-9"><a href="#cb22-9"></a><span class="kw">class</span> Settings(BaseSettings):</span>
+<span id="cb22-10"><a href="#cb22-10"></a>    model_config <span class="op">=</span> SettingsConfigDict(env_file<span class="op">=</span><span class="st">".env"</span>)</span>
+<span id="cb22-11"><a href="#cb22-11"></a>    db_path: Path <span class="op">=</span> <span class="st">"app/db.sqlite"</span></span>
+<span id="cb22-12"><a href="#cb22-12"></a></span>
+<span id="cb22-13"><a href="#cb22-13"></a></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="cf">async</span> <span class="kw">def</span> get_settings():</span>
+<span id="cb22-15"><a href="#cb22-15"></a>    <span class="cf">yield</span> Settings()</span>
+<span id="cb22-16"><a href="#cb22-16"></a></span>
+<span id="cb22-17"><a href="#cb22-17"></a></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="cf">async</span> <span class="kw">def</span> get_db(settings: Annotated[Settings, Depends(get_settings)]):</span>
+<span id="cb22-19"><a href="#cb22-19"></a>    conn <span class="op">=</span> sqlite3.<span class="ex">connect</span>(settings.db_path)</span>
+<span id="cb22-20"><a href="#cb22-20"></a>    <span class="cf">try</span>:</span>
+<span id="cb22-21"><a href="#cb22-21"></a>        <span class="cf">yield</span> conn</span>
+<span id="cb22-22"><a href="#cb22-22"></a>    <span class="cf">finally</span>:</span>
+<span id="cb22-23"><a href="#cb22-23"></a>        conn.close()</span>
+<span id="cb22-24"><a href="#cb22-24"></a></span>
+<span id="cb22-25"><a href="#cb22-25"></a></span>
+<span id="cb22-26"><a href="#cb22-26"></a>app <span class="op">=</span> FastAPI()</span>
+<span id="cb22-27"><a href="#cb22-27"></a>templates <span class="op">=</span> Jinja2Templates(<span class="st">'app/templates'</span>) </span>
+<span id="cb22-28"><a href="#cb22-28"></a></span>
+<span id="cb22-29"><a href="#cb22-29"></a></span>
+<span id="cb22-30"><a href="#cb22-30"></a><span class="at">@app.get</span>(<span class="st">"/"</span>) </span>
+<span id="cb22-31"><a href="#cb22-31"></a><span class="cf">async</span> <span class="kw">def</span> home(request: Request): </span>
+<span id="cb22-32"><a href="#cb22-32"></a>    <span class="cf">return</span> templates.TemplateResponse(<span class="st">'index.html'</span>, context<span class="op">=</span>{<span class="st">'request'</span>: request}) </span>
+<span id="cb22-33"><a href="#cb22-33"></a></span>
+<span id="cb22-34"><a href="#cb22-34"></a>...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Here we created a <code>templates</code> object that is using Jinja2 to render the files inside the <code>app/templates</code> folder. Note that for each <code>TemplateResponse</code> you need to pass a context object with the request.</p>
+<p>We can now work on the <code>index.html</code> file by importing tabulator from a CDN and creating the Javascript object by refering to the documentation on <a href="https://tabulator.info/docs/5.5/data#ajax">loading AJAX data</a> and on <a href="https://tabulator.info/docs/5.5/page#remote">setting server side pagination</a>:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/index.html</strong></pre>
+</div>
+<div class="sourceCode" id="cb23" data-source-line-numbers="17-19,28-36" data-code-line-numbers="17-19,28-36"><pre class="sourceCode numberSource html number-lines code-with-copy"><code class="sourceCode html"><span id="cb23-1"><a href="#cb23-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a>    <span class="kw">&lt;title&gt;</span>Alarms<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a>    <span class="kw">&lt;style&gt;</span></span>
+<span id="cb23-6"><a href="#cb23-6"></a>        body {</span>
+<span id="cb23-7"><a href="#cb23-7"></a>            <span class="kw">font-family</span>: Arial<span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a>            <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>            <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb23-10"><a href="#cb23-10"></a>            <span class="kw">background-color</span>: <span class="cn">#f0f0f0</span><span class="op">;</span></span>
+<span id="cb23-11"><a href="#cb23-11"></a>        }</span>
+<span id="cb23-12"><a href="#cb23-12"></a>        h1 {</span>
+<span id="cb23-13"><a href="#cb23-13"></a>            <span class="kw">color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a>            <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a>            <span class="kw">padding</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb23-16"><a href="#cb23-16"></a>        }</span>
+<span id="cb23-17"><a href="#cb23-17"></a>        <span class="pp">#alarms-table</span> {</span>
+<span id="cb23-18"><a href="#cb23-18"></a>            <span class="kw">margin</span>: <span class="dv">3</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb23-19"><a href="#cb23-19"></a>        }</span>
+<span id="cb23-20"><a href="#cb23-20"></a>    <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb23-21"><a href="#cb23-21"></a>    <span class="kw">&lt;link</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css"</span> <span class="er">rel</span><span class="ot">=</span><span class="st">"stylesheet"</span><span class="kw">&gt;</span></span>
+<span id="cb23-22"><a href="#cb23-22"></a>    <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">"text/javascript"</span> <span class="er">src</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb23-23"><a href="#cb23-23"></a><span class="kw">&lt;/head&gt;</span></span>
+<span id="cb23-24"><a href="#cb23-24"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb23-25"><a href="#cb23-25"></a>    <span class="kw">&lt;h1&gt;</span>Alarms list<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb23-26"><a href="#cb23-26"></a>    <span class="kw">&lt;div</span> <span class="er">id</span><span class="ot">=</span><span class="st">"alarms-table"</span><span class="kw">&gt;&lt;/div&gt;</span></span>
+<span id="cb23-27"><a href="#cb23-27"></a>    <span class="kw">&lt;script&gt;</span></span>
+<span id="cb23-28"><a href="#cb23-28"></a>        <span class="kw">var</span> table <span class="op">=</span> <span class="kw">new</span> <span class="fu">Tabulator</span>(<span class="st">"#alarms-table"</span><span class="op">,</span> {</span>
+<span id="cb23-29"><a href="#cb23-29"></a>            <span class="dt">layout</span><span class="op">:</span> <span class="st">'fitDataStretch'</span><span class="op">,</span></span>
+<span id="cb23-30"><a href="#cb23-30"></a>            <span class="dt">ajaxURL</span><span class="op">:</span> <span class="st">"/alarms"</span><span class="op">,</span></span>
+<span id="cb23-31"><a href="#cb23-31"></a>            <span class="dt">ajaxContentType</span><span class="op">:</span> <span class="st">'json'</span><span class="op">,</span></span>
+<span id="cb23-32"><a href="#cb23-32"></a>            <span class="dt">ajaxConfig</span><span class="op">:</span> <span class="st">'GET'</span><span class="op">,</span></span>
+<span id="cb23-33"><a href="#cb23-33"></a>            <span class="dt">pagination</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb23-34"><a href="#cb23-34"></a>            <span class="dt">paginationMode</span><span class="op">:</span> <span class="st">"remote"</span><span class="op">,</span></span>
+<span id="cb23-35"><a href="#cb23-35"></a>            <span class="dt">autoColumns</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span> </span>
+<span id="cb23-36"><a href="#cb23-36"></a>            <span class="dt">paginationSize</span><span class="op">:</span> <span class="dv">10</span> </span>
+<span id="cb23-37"><a href="#cb23-37"></a>        })</span>
+<span id="cb23-38"><a href="#cb23-38"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb23-39"><a href="#cb23-39"></a><span class="kw">&lt;/body&gt;</span></span>
+<span id="cb23-40"><a href="#cb23-40"></a><span class="kw">&lt;/html&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Few things to note here:</p>
+<ol type="1">
+<li>Pagination must be enabled and set to remote. If not, tabulator will expect the <code>ajaxURL</code> to provide an array of records.</li>
+<li>Setting <code>autoColumns</code> is needed if you don’t want to define the column by yourself.</li>
+</ol>
+<p>This is what my web page look like:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="initial_table.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Home page with tabulator loading data from a DB</figcaption>
+</figure>
+</div>
+</section>
+<section id="adding-server-side-filtering" class="level2">
+<h2 class="anchored" data-anchor-id="adding-server-side-filtering">Adding server side filtering</h2>
+<p>Tabulator allows to have some filters on the header of each column. A query is sent to the <code>ajaxURL</code> in the form of an array. We should also change the method from <code>GET</code> to <code>POST</code>, as I had a hard-time trying to pass URL-encoded lists to FastAPI and get it parsed as query parameters, so a body parameter is more adequate. Let’s enable header filters:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/index.html</strong></pre>
+</div>
+<div class="sourceCode" id="cb24" data-source-line-numbers="31,32,36-39" data-code-line-numbers="31,32,36-39"><pre class="sourceCode numberSource html number-lines code-with-copy"><code class="sourceCode html"><span id="cb24-1"><a href="#cb24-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>    <span class="kw">&lt;title&gt;</span>Alarms<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb24-5"><a href="#cb24-5"></a>    <span class="kw">&lt;style&gt;</span></span>
+<span id="cb24-6"><a href="#cb24-6"></a>        body {</span>
+<span id="cb24-7"><a href="#cb24-7"></a>            <span class="kw">font-family</span>: Arial<span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="cb24-8"><a href="#cb24-8"></a>            <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb24-9"><a href="#cb24-9"></a>            <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>            <span class="kw">background-color</span>: <span class="cn">#f0f0f0</span><span class="op">;</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a>        }</span>
+<span id="cb24-12"><a href="#cb24-12"></a>        h1 {</span>
+<span id="cb24-13"><a href="#cb24-13"></a>            <span class="kw">color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+<span id="cb24-14"><a href="#cb24-14"></a>            <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+<span id="cb24-15"><a href="#cb24-15"></a>            <span class="kw">padding</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb24-16"><a href="#cb24-16"></a>        }</span>
+<span id="cb24-17"><a href="#cb24-17"></a>        <span class="pp">#alarms-table</span> {</span>
+<span id="cb24-18"><a href="#cb24-18"></a>            <span class="kw">margin</span>: <span class="dv">3</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb24-19"><a href="#cb24-19"></a>        }</span>
+<span id="cb24-20"><a href="#cb24-20"></a>    <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb24-21"><a href="#cb24-21"></a>    <span class="kw">&lt;link</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css"</span> <span class="er">rel</span><span class="ot">=</span><span class="st">"stylesheet"</span><span class="kw">&gt;</span></span>
+<span id="cb24-22"><a href="#cb24-22"></a>    <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">"text/javascript"</span> <span class="er">src</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb24-23"><a href="#cb24-23"></a><span class="kw">&lt;/head&gt;</span></span>
+<span id="cb24-24"><a href="#cb24-24"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb24-25"><a href="#cb24-25"></a>    <span class="kw">&lt;h1&gt;</span>Alarms list<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb24-26"><a href="#cb24-26"></a>    <span class="kw">&lt;div</span> <span class="er">id</span><span class="ot">=</span><span class="st">"alarms-table"</span><span class="kw">&gt;&lt;/div&gt;</span></span>
+<span id="cb24-27"><a href="#cb24-27"></a>    <span class="kw">&lt;script&gt;</span></span>
+<span id="cb24-28"><a href="#cb24-28"></a>        <span class="kw">var</span> table <span class="op">=</span> <span class="kw">new</span> <span class="fu">Tabulator</span>(<span class="st">"#alarms-table"</span><span class="op">,</span> {</span>
+<span id="cb24-29"><a href="#cb24-29"></a>            <span class="dt">layout</span><span class="op">:</span> <span class="st">'fitDataStretch'</span><span class="op">,</span></span>
+<span id="cb24-30"><a href="#cb24-30"></a>            <span class="dt">ajaxURL</span><span class="op">:</span> <span class="st">"/alarms"</span><span class="op">,</span></span>
+<span id="cb24-31"><a href="#cb24-31"></a>            <span class="dt">ajaxContentType</span><span class="op">:</span> <span class="st">'json'</span><span class="op">,</span></span>
+<span id="cb24-32"><a href="#cb24-32"></a>            <span class="dt">ajaxConfig</span><span class="op">:</span> <span class="st">'POST'</span><span class="op">,</span></span>
+<span id="cb24-33"><a href="#cb24-33"></a>            <span class="dt">pagination</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb24-34"><a href="#cb24-34"></a>            <span class="dt">paginationMode</span><span class="op">:</span> <span class="st">"remote"</span><span class="op">,</span></span>
+<span id="cb24-35"><a href="#cb24-35"></a>            <span class="dt">paginationSize</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span></span>
+<span id="cb24-36"><a href="#cb24-36"></a>            <span class="dt">filterMode</span><span class="op">:</span> <span class="st">'remote'</span><span class="op">,</span></span>
+<span id="cb24-37"><a href="#cb24-37"></a>            <span class="dt">autoColumns</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb24-38"><a href="#cb24-38"></a>            <span class="dt">autoColumnsDefinitions</span><span class="op">:</span> [</span>
+<span id="cb24-39"><a href="#cb24-39"></a>                {<span class="dt">field</span><span class="op">:</span> <span class="st">'text'</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> <span class="st">'Text'</span><span class="op">,</span> <span class="dt">headerFilter</span><span class="op">:</span> <span class="st">"input"</span>}</span>
+<span id="cb24-40"><a href="#cb24-40"></a>            ]</span>
+<span id="cb24-41"><a href="#cb24-41"></a>        })</span>
+<span id="cb24-42"><a href="#cb24-42"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb24-43"><a href="#cb24-43"></a><span class="kw">&lt;/body&gt;</span></span>
+<span id="cb24-44"><a href="#cb24-44"></a><span class="kw">&lt;/html&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And update the code in the <code>main.py</code> file</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb25" data-code-line-numbers="1,5,8,9,11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="im">from</span> fastapi <span class="im">import</span> FastAPI, Request, Query, Depends, Body </span>
+<span id="cb25-2"><a href="#cb25-2"></a></span>
+<span id="cb25-3"><a href="#cb25-3"></a>...</span>
+<span id="cb25-4"><a href="#cb25-4"></a></span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="at">@app.post</span>(<span class="st">"/alarms"</span>) </span>
+<span id="cb25-6"><a href="#cb25-6"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
+<span id="cb25-7"><a href="#cb25-7"></a>    request: Request,</span>
+<span id="cb25-8"><a href="#cb25-8"></a>    page: Annotated[<span class="bu">int</span>, Body(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>, </span>
+<span id="cb25-9"><a href="#cb25-9"></a>    size: Annotated[<span class="bu">int</span>, Body(lt<span class="op">=</span><span class="dv">100</span>)] <span class="op">=</span> <span class="dv">100</span>, </span>
+<span id="cb25-10"><a href="#cb25-10"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db), </span>
+<span id="cb25-11"><a href="#cb25-11"></a>    <span class="bu">filter</span>: Annotated[<span class="bu">list</span>[<span class="bu">dict</span>], Body()] <span class="op">=</span> <span class="va">None</span> </span>
+<span id="cb25-12"><a href="#cb25-12"></a>):</span>
+<span id="cb25-13"><a href="#cb25-13"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<span id="cb25-14"><a href="#cb25-14"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<span id="cb25-15"><a href="#cb25-15"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
+<span id="cb25-16"><a href="#cb25-16"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) as count FROM alarms"</span>)</span>
+<span id="cb25-17"><a href="#cb25-17"></a>    n_rows <span class="op">=</span> cursor.fetchone()[<span class="st">'count'</span>]</span>
+<span id="cb25-18"><a href="#cb25-18"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb25-19"><a href="#cb25-19"></a>    </span>
+<span id="cb25-20"><a href="#cb25-20"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms LIMIT ? OFFSET ?"</span>, (size, offset))</span>
+<span id="cb25-21"><a href="#cb25-21"></a>    alarms <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb25-22"><a href="#cb25-22"></a>    <span class="cf">return</span> {</span>
+<span id="cb25-23"><a href="#cb25-23"></a>        <span class="st">'last_page'</span>: n_pages,</span>
+<span id="cb25-24"><a href="#cb25-24"></a>        <span class="st">'data'</span>: alarms </span>
+<span id="cb25-25"><a href="#cb25-25"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If you inspect the request from the developer console, you would see that when typing something in the <code>text</code> this json payload is sent:</p>
+<div class="sourceCode" id="cb26" data-code-line-numbers=""><pre class="sourceCode numberSource json number-lines code-with-copy"><code class="sourceCode json"><span id="cb26-1"><a href="#cb26-1"></a><span class="fu">{</span><span class="dt">"filter"</span><span class="fu">:</span><span class="ot">[</span><span class="fu">{</span><span class="dt">"field"</span><span class="fu">:</span><span class="st">"text"</span><span class="fu">,</span><span class="dt">"type"</span><span class="fu">:</span><span class="st">"like"</span><span class="fu">,</span><span class="dt">"value"</span><span class="fu">:</span><span class="st">"rpc"</span><span class="fu">}</span><span class="ot">]</span><span class="fu">,</span><span class="dt">"page"</span><span class="fu">:</span><span class="dv">1</span><span class="fu">,</span><span class="dt">"size"</span><span class="fu">:</span><span class="dv">10</span><span class="fu">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>The filter key contains a list of filters, each one for a set of condition that we can use to filter the data on our db. In particular, the <code>field</code> key refers to the column of the table, the <code>type</code> is the operator used and <code>value</code> is the value typed in in the header input. We should only be careful about possible SQL injections. For this reason</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-29" data-source-line-numbers="11-33,40" data-code-line-numbers="11-33,40"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-29-1"><a href="#annotated-cell-29-1"></a><span class="at">@app.post</span>(<span class="st">"/alarms"</span>)</span>
+<span id="annotated-cell-29-2"><a href="#annotated-cell-29-2"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
+<span id="annotated-cell-29-3"><a href="#annotated-cell-29-3"></a>    request: Request,</span>
+<span id="annotated-cell-29-4"><a href="#annotated-cell-29-4"></a>    page: Annotated[<span class="bu">int</span>, Body(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="annotated-cell-29-5"><a href="#annotated-cell-29-5"></a>    size: Annotated[<span class="bu">int</span>, Body(lt<span class="op">=</span><span class="dv">100</span>)] <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="annotated-cell-29-6"><a href="#annotated-cell-29-6"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db), </span>
+<span id="annotated-cell-29-7"><a href="#annotated-cell-29-7"></a>    <span class="bu">filter</span>: Annotated[<span class="bu">list</span>[<span class="bu">dict</span>], Body()] <span class="op">=</span> <span class="va">None</span></span>
+<span id="annotated-cell-29-8"><a href="#annotated-cell-29-8"></a>):</span>
+<span id="annotated-cell-29-9"><a href="#annotated-cell-29-9"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<span id="annotated-cell-29-10"><a href="#annotated-cell-29-10"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-29-11" class="code-annotation-target"><a href="#annotated-cell-29-11"></a>    where_clauses <span class="op">=</span> []</span>
+<span id="annotated-cell-29-12"><a href="#annotated-cell-29-12"></a>    where_query <span class="op">=</span> <span class="st">""</span></span>
+<span id="annotated-cell-29-13"><a href="#annotated-cell-29-13"></a>    placeholder_values <span class="op">=</span> []</span>
+<span id="annotated-cell-29-14"><a href="#annotated-cell-29-14"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">filter</span>):  <span class="co"># Apply a WHERE clause in the SQL query</span></span>
+<span id="annotated-cell-29-15"><a href="#annotated-cell-29-15"></a>        where_query <span class="op">+=</span> <span class="st">" WHERE "</span></span>
+<span id="annotated-cell-29-16"><a href="#annotated-cell-29-16"></a>        <span class="cf">for</span> filter_obj <span class="kw">in</span> <span class="bu">filter</span>:</span>
+<span id="annotated-cell-29-17"><a href="#annotated-cell-29-17"></a>            field, <span class="bu">type</span>, value <span class="op">=</span> filter_obj[<span class="st">'field'</span>], filter_obj[<span class="st">'type'</span>], filter_obj[<span class="st">'value'</span>]</span>
+<span id="annotated-cell-29-18"><a href="#annotated-cell-29-18"></a>            <span class="co"># Check that the filter field can be trusted and exists as a column in our table</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-29-19" class="code-annotation-target"><a href="#annotated-cell-29-19"></a>            cursor.execute(<span class="st">"select name from PRAGMA_TABLE_INFO('alarms') where name = ?"</span>, (field,))</span>
+<span id="annotated-cell-29-20"><a href="#annotated-cell-29-20"></a>            column_field <span class="op">=</span> cursor.fetchone()</span>
+<span id="annotated-cell-29-21"><a href="#annotated-cell-29-21"></a>            operand <span class="op">=</span> <span class="bu">type</span>.upper()</span>
+<span id="annotated-cell-29-22"><a href="#annotated-cell-29-22"></a>            <span class="cf">if</span> column_field:  <span class="co"># the filter field exists as a column</span></span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-29-23" class="code-annotation-target"><a href="#annotated-cell-29-23"></a>                <span class="cf">match</span> operand:</span>
+<span id="annotated-cell-29-24"><a href="#annotated-cell-29-24"></a>                    <span class="cf">case</span> <span class="st">'LIKE'</span>: <span class="co"># if using like as tabulator mention, add wildcards</span></span>
+<span id="annotated-cell-29-25"><a href="#annotated-cell-29-25"></a>                        placeholder_value <span class="op">=</span> <span class="ss">f'%</span><span class="sc">{</span>value<span class="sc">}</span><span class="ss">%'</span></span>
+<span id="annotated-cell-29-26"><a href="#annotated-cell-29-26"></a>                    <span class="cf">case</span> <span class="st">'='</span>:  <span class="co"># this is mostly used for numerical, categorical or date filtering</span></span>
+<span id="annotated-cell-29-27"><a href="#annotated-cell-29-27"></a>                        placeholder_value <span class="op">=</span> value</span>
+<span id="annotated-cell-29-28"><a href="#annotated-cell-29-28"></a>                    <span class="cf">case</span> other:  <span class="co"># the operand is not supported, return an HTTP 400 response</span></span>
+<span id="annotated-cell-29-29"><a href="#annotated-cell-29-29"></a>                        <span class="cf">raise</span> HTTPException(status_code<span class="op">=</span><span class="dv">400</span>, detail<span class="op">=</span><span class="ss">f"Filter type </span><span class="sc">{</span>operand<span class="sc">}</span><span class="ss"> not supported."</span>)</span>
+<span id="annotated-cell-29-30"><a href="#annotated-cell-29-30"></a>    </span>
+<span id="annotated-cell-29-31"><a href="#annotated-cell-29-31"></a>                where_clauses.append(<span class="ss">f"</span><span class="sc">{</span>column_field[<span class="st">'name'</span>]<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>operand<span class="sc">}</span><span class="ss"> ?"</span>)</span>
+<span id="annotated-cell-29-32"><a href="#annotated-cell-29-32"></a>                placeholder_values.append(placeholder_value)</span>
+<span id="annotated-cell-29-33"><a href="#annotated-cell-29-33"></a>        where_query <span class="op">+=</span> <span class="st">" AND "</span>.join(where_clauses)</span>
+<span id="annotated-cell-29-34"><a href="#annotated-cell-29-34"></a>                    </span>
+<span id="annotated-cell-29-35"><a href="#annotated-cell-29-35"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
+<span id="annotated-cell-29-36"><a href="#annotated-cell-29-36"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) as count FROM alarms"</span>)</span>
+<span id="annotated-cell-29-37"><a href="#annotated-cell-29-37"></a>    n_rows <span class="op">=</span> cursor.fetchone()[<span class="st">'count'</span>]</span>
+<span id="annotated-cell-29-38"><a href="#annotated-cell-29-38"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
+<span id="annotated-cell-29-39"><a href="#annotated-cell-29-39"></a>    </span>
+<span id="annotated-cell-29-40"><a href="#annotated-cell-29-40"></a>    cursor.execute(<span class="ss">f"SELECT * FROM alarms </span><span class="sc">{</span>where_query<span class="sc">}</span><span class="ss"> LIMIT ? OFFSET ?"</span>, (<span class="op">*</span>placeholder_values, size, offset))</span>
+<span id="annotated-cell-29-41"><a href="#annotated-cell-29-41"></a>    alarms <span class="op">=</span> cursor.fetchall()</span>
+<span id="annotated-cell-29-42"><a href="#annotated-cell-29-42"></a>    <span class="cf">return</span> {</span>
+<span id="annotated-cell-29-43"><a href="#annotated-cell-29-43"></a>        <span class="st">'last_page'</span>: n_pages,</span>
+<span id="annotated-cell-29-44"><a href="#annotated-cell-29-44"></a>        <span class="st">'data'</span>: alarms </span>
+<span id="annotated-cell-29-45"><a href="#annotated-cell-29-45"></a>    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-29" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-lines="11,12,13" data-code-annotation="1" data-code-cell="annotated-cell-29">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
+</dd>
+<dt data-target-cell="annotated-cell-29" data-target-annotation="2">2</dt>
+<dd>
+<span data-code-lines="19" data-code-annotation="2" data-code-cell="annotated-cell-29">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
+</dd>
+<dt data-target-cell="annotated-cell-29" data-target-annotation="3">3</dt>
+<dd>
+<span data-code-lines="23" data-code-annotation="3" data-code-cell="annotated-cell-29">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
+</dd>
+</dl>
+<p>And that’s it, now we have text filtering!</p>
+</section>
+<section id="adding-date-filters" class="level2">
+<h2 class="anchored" data-anchor-id="adding-date-filters">Adding date filters</h2>
+<p>Now that the general idea behind server side filtering is clear, we could extend the filtering also to dates.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/templates/index.html</strong></pre>
+</div>
+<div class="sourceCode" id="cb27" data-source-line-numbers="23-25,43,44" data-code-line-numbers="23-25,43,44"><pre class="sourceCode numberSource html number-lines code-with-copy"><code class="sourceCode html"><span id="cb27-1"><a href="#cb27-1"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">&lt;html&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a>    <span class="kw">&lt;title&gt;</span>Alarms<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a>    <span class="kw">&lt;style&gt;</span></span>
+<span id="cb27-6"><a href="#cb27-6"></a>        body {</span>
+<span id="cb27-7"><a href="#cb27-7"></a>            <span class="kw">font-family</span>: Arial<span class="op">,</span> <span class="dv">sans-serif</span><span class="op">;</span></span>
+<span id="cb27-8"><a href="#cb27-8"></a>            <span class="kw">margin</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb27-9"><a href="#cb27-9"></a>            <span class="kw">padding</span>: <span class="dv">0</span><span class="op">;</span></span>
+<span id="cb27-10"><a href="#cb27-10"></a>            <span class="kw">background-color</span>: <span class="cn">#f0f0f0</span><span class="op">;</span></span>
+<span id="cb27-11"><a href="#cb27-11"></a>        }</span>
+<span id="cb27-12"><a href="#cb27-12"></a>        h1 {</span>
+<span id="cb27-13"><a href="#cb27-13"></a>            <span class="kw">color</span>: <span class="cn">#333</span><span class="op">;</span></span>
+<span id="cb27-14"><a href="#cb27-14"></a>            <span class="kw">text-align</span>: <span class="dv">center</span><span class="op">;</span></span>
+<span id="cb27-15"><a href="#cb27-15"></a>            <span class="kw">padding</span>: <span class="dv">20</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb27-16"><a href="#cb27-16"></a>        }</span>
+<span id="cb27-17"><a href="#cb27-17"></a>        <span class="pp">#alarms-table</span> {</span>
+<span id="cb27-18"><a href="#cb27-18"></a>            <span class="kw">margin</span>: <span class="dv">3</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb27-19"><a href="#cb27-19"></a>        }</span>
+<span id="cb27-20"><a href="#cb27-20"></a>    <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb27-21"><a href="#cb27-21"></a>    <span class="kw">&lt;link</span> <span class="er">href</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/css/tabulator.min.css"</span> <span class="er">rel</span><span class="ot">=</span><span class="st">"stylesheet"</span><span class="kw">&gt;</span></span>
+<span id="cb27-22"><a href="#cb27-22"></a>    <span class="kw">&lt;script</span><span class="ot"> type=</span><span class="st">"text/javascript"</span> <span class="er">src</span><span class="ot">=</span><span class="st">"https://unpkg.com/tabulator-tables@5.5.2/dist/js/tabulator.min.js"</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb27-23"><a href="#cb27-23"></a>    <span class="kw">&lt;script</span> <span class="er">src</span><span class="ot">=</span><span class="st">"https://cdnjs.cloudflare.com/ajax/libs/luxon/3.4.3/luxon.min.js"</span></span>
+<span id="cb27-24"><a href="#cb27-24"></a><span class="ot">        integrity=</span><span class="st">"sha512-gUQcFuEaDuAEqvxIQ9GDdMcCeFmG5MPnoc6ruJn+nyCNHrHM2oB97GOVLIOiixzTxPYmIfEQbOoQmx55UscLyw=="</span></span>
+<span id="cb27-25"><a href="#cb27-25"></a><span class="ot">        crossorigin=</span><span class="st">"anonymous"</span> <span class="er">referrerpolicy</span><span class="ot">=</span><span class="st">"no-referrer"</span><span class="kw">&gt;&lt;/script&gt;</span></span>
+<span id="cb27-26"><a href="#cb27-26"></a><span class="kw">&lt;/head&gt;</span></span>
+<span id="cb27-27"><a href="#cb27-27"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb27-28"><a href="#cb27-28"></a>    <span class="kw">&lt;h1&gt;</span>Alarms list<span class="kw">&lt;/h1&gt;</span></span>
+<span id="cb27-29"><a href="#cb27-29"></a>    <span class="kw">&lt;div</span> <span class="er">id</span><span class="ot">=</span><span class="st">"alarms-table"</span><span class="kw">&gt;&lt;/div&gt;</span></span>
+<span id="cb27-30"><a href="#cb27-30"></a>    <span class="kw">&lt;script&gt;</span></span>
+<span id="cb27-31"><a href="#cb27-31"></a>        <span class="kw">var</span> table <span class="op">=</span> <span class="kw">new</span> <span class="fu">Tabulator</span>(<span class="st">"#alarms-table"</span><span class="op">,</span> {</span>
+<span id="cb27-32"><a href="#cb27-32"></a>            <span class="dt">layout</span><span class="op">:</span> <span class="st">'fitDataStretch'</span><span class="op">,</span></span>
+<span id="cb27-33"><a href="#cb27-33"></a>            <span class="dt">ajaxURL</span><span class="op">:</span> <span class="st">"/alarms"</span><span class="op">,</span></span>
+<span id="cb27-34"><a href="#cb27-34"></a>            <span class="dt">ajaxContentType</span><span class="op">:</span> <span class="st">'json'</span><span class="op">,</span></span>
+<span id="cb27-35"><a href="#cb27-35"></a>            <span class="dt">ajaxConfig</span><span class="op">:</span> <span class="st">'POST'</span><span class="op">,</span></span>
+<span id="cb27-36"><a href="#cb27-36"></a>            <span class="dt">pagination</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb27-37"><a href="#cb27-37"></a>            <span class="dt">paginationMode</span><span class="op">:</span> <span class="st">"remote"</span><span class="op">,</span></span>
+<span id="cb27-38"><a href="#cb27-38"></a>            <span class="dt">paginationSize</span><span class="op">:</span> <span class="dv">10</span><span class="op">,</span></span>
+<span id="cb27-39"><a href="#cb27-39"></a>            <span class="dt">filterMode</span><span class="op">:</span> <span class="st">'remote'</span><span class="op">,</span></span>
+<span id="cb27-40"><a href="#cb27-40"></a>            <span class="dt">autoColumns</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb27-41"><a href="#cb27-41"></a>            <span class="dt">autoColumnsDefinitions</span><span class="op">:</span> [</span>
+<span id="cb27-42"><a href="#cb27-42"></a>                {<span class="dt">field</span><span class="op">:</span> <span class="st">'text'</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> <span class="st">'Text'</span><span class="op">,</span> <span class="dt">headerFilter</span><span class="op">:</span> <span class="st">"input"</span>}<span class="op">,</span></span>
+<span id="cb27-43"><a href="#cb27-43"></a>                {<span class="dt">field</span><span class="op">:</span> <span class="st">'timestamp'</span><span class="op">,</span> <span class="dt">title</span><span class="op">:</span> <span class="st">'Alarm timestamp'</span><span class="op">,</span> </span>
+<span id="cb27-44"><a href="#cb27-44"></a>                 <span class="dt">formatter</span><span class="op">:</span> <span class="st">'datetime'</span><span class="op">,</span> <span class="dt">headerFilter</span><span class="op">:</span> <span class="st">'date'</span>}</span>
+<span id="cb27-45"><a href="#cb27-45"></a>            ]</span>
+<span id="cb27-46"><a href="#cb27-46"></a>        })</span>
+<span id="cb27-47"><a href="#cb27-47"></a>    <span class="kw">&lt;/script&gt;</span></span>
+<span id="cb27-48"><a href="#cb27-48"></a><span class="kw">&lt;/body&gt;</span></span>
+<span id="cb27-49"><a href="#cb27-49"></a><span class="kw">&lt;/html&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that I have added the luxon.js library <a href="https://tabulator.info/docs/5.5/format#formatter-link">as mentioned in the tabulator documentation</a>. I have a put a date filter for a datetime column. This is because I would like the filter to get only the rows received on a particular date.</p>
+<p>On the backend side we would need to deal with this particular case: if the column is <code>timestamp</code>, then we can convert the timestamp to date and use it for our <code>where</code> clause:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>app/main.py</strong></pre>
+</div>
+<div class="sourceCode" id="cb28" data-code-line-numbers="25,26,27,28,29,30,31,32,33,34,35"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a>...</span>
+<span id="cb28-2"><a href="#cb28-2"></a></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="at">@app.post</span>(<span class="st">"/alarms"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
+<span id="cb28-5"><a href="#cb28-5"></a>    request: Request,</span>
+<span id="cb28-6"><a href="#cb28-6"></a>    page: Annotated[<span class="bu">int</span>, Body(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
+<span id="cb28-7"><a href="#cb28-7"></a>    size: Annotated[<span class="bu">int</span>, Body(lt<span class="op">=</span><span class="dv">100</span>)] <span class="op">=</span> <span class="dv">100</span>,</span>
+<span id="cb28-8"><a href="#cb28-8"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db), </span>
+<span id="cb28-9"><a href="#cb28-9"></a>    <span class="bu">filter</span>: Annotated[<span class="bu">list</span>[<span class="bu">dict</span>], Body()] <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb28-10"><a href="#cb28-10"></a>):</span>
+<span id="cb28-11"><a href="#cb28-11"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<span id="cb28-12"><a href="#cb28-12"></a>    cursor <span class="op">=</span> db.cursor()</span>
+<span id="cb28-13"><a href="#cb28-13"></a>    where_clauses <span class="op">=</span> []</span>
+<span id="cb28-14"><a href="#cb28-14"></a>    where_query <span class="op">=</span> <span class="st">""</span></span>
+<span id="cb28-15"><a href="#cb28-15"></a>    placeholder_values <span class="op">=</span> []</span>
+<span id="cb28-16"><a href="#cb28-16"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">filter</span>):  <span class="co"># Apply a WHERE clause in the SQL query</span></span>
+<span id="cb28-17"><a href="#cb28-17"></a>        where_query <span class="op">+=</span> <span class="st">" WHERE "</span></span>
+<span id="cb28-18"><a href="#cb28-18"></a>        <span class="cf">for</span> filter_obj <span class="kw">in</span> <span class="bu">filter</span>:</span>
+<span id="cb28-19"><a href="#cb28-19"></a>            field, <span class="bu">type</span>, value <span class="op">=</span> filter_obj[<span class="st">'field'</span>], filter_obj[<span class="st">'type'</span>], filter_obj[<span class="st">'value'</span>]</span>
+<span id="cb28-20"><a href="#cb28-20"></a>            <span class="co"># Check that the filter field can be trusted and exists as a column in our table</span></span>
+<span id="cb28-21"><a href="#cb28-21"></a>            cursor.execute(<span class="st">"select name from PRAGMA_TABLE_INFO('alarms') where name = ?"</span>, (field,))</span>
+<span id="cb28-22"><a href="#cb28-22"></a>            column_field <span class="op">=</span> cursor.fetchone()</span>
+<span id="cb28-23"><a href="#cb28-23"></a>            operand <span class="op">=</span> <span class="bu">type</span>.upper()</span>
+<span id="cb28-24"><a href="#cb28-24"></a>            <span class="cf">if</span> column_field:  <span class="co"># the filter field exists as a column</span></span>
+<span id="cb28-25"><a href="#cb28-25"></a>                identifier <span class="op">=</span> column_field[<span class="st">'name'</span>] </span>
+<span id="cb28-26"><a href="#cb28-26"></a>                match (operand, identifier): </span>
+<span id="cb28-27"><a href="#cb28-27"></a>                    <span class="cf">case</span> <span class="st">'LIKE'</span>, _: <span class="co"># if using like as tabulator mention, add wildcards </span></span>
+<span id="cb28-28"><a href="#cb28-28"></a>                        placeholder_value <span class="op">=</span> <span class="ss">f'%</span><span class="sc">{</span>value<span class="sc">}</span><span class="ss">%'</span> </span>
+<span id="cb28-29"><a href="#cb28-29"></a>                    case (<span class="st">'='</span>, <span class="st">'timestamp'</span>): </span>
+<span id="cb28-30"><a href="#cb28-30"></a>                        <span class="co"># convert the timestamp identifier column to a date </span></span>
+<span id="cb28-31"><a href="#cb28-31"></a>                        column_field </span>
+<span id="cb28-32"><a href="#cb28-32"></a>                        placeholder_value <span class="op">=</span> value </span>
+<span id="cb28-33"><a href="#cb28-33"></a>                        identifier <span class="op">=</span> <span class="ss">f"strftime('%Y-%m-%d', </span><span class="sc">{</span>column_field[<span class="st">'name'</span>]<span class="sc">}</span><span class="ss">)"</span> </span>
+<span id="cb28-34"><a href="#cb28-34"></a>                    case (<span class="st">'='</span>, _):  <span class="co"># this is mostly used for numerical, categorical or date filtering </span></span>
+<span id="cb28-35"><a href="#cb28-35"></a>                        placeholder_value <span class="op">=</span> value </span>
+<span id="cb28-36"><a href="#cb28-36"></a></span>
+<span id="cb28-37"><a href="#cb28-37"></a>                    <span class="cf">case</span> other:  <span class="co"># the operand is not supported, return an HTTP 400 response</span></span>
+<span id="cb28-38"><a href="#cb28-38"></a>                        <span class="cf">raise</span> HTTPException(status_code<span class="op">=</span><span class="dv">400</span>, detail<span class="op">=</span><span class="ss">f"Filter type </span><span class="sc">{</span>operand<span class="sc">}</span><span class="ss"> not supported."</span>)</span>
+<span id="cb28-39"><a href="#cb28-39"></a>    </span>
+<span id="cb28-40"><a href="#cb28-40"></a>                where_clauses.append(<span class="ss">f"</span><span class="sc">{</span>identifier<span class="sc">}</span><span class="ss"> </span><span class="sc">{</span>operand<span class="sc">}</span><span class="ss"> ?"</span>)</span>
+<span id="cb28-41"><a href="#cb28-41"></a>                placeholder_values.append(placeholder_value)</span>
+<span id="cb28-42"><a href="#cb28-42"></a>        where_query <span class="op">+=</span> <span class="st">" AND "</span>.join(where_clauses)</span>
+<span id="cb28-43"><a href="#cb28-43"></a>                    </span>
+<span id="cb28-44"><a href="#cb28-44"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
+<span id="cb28-45"><a href="#cb28-45"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) as count FROM alarms"</span>)</span>
+<span id="cb28-46"><a href="#cb28-46"></a>    n_rows <span class="op">=</span> cursor.fetchone()[<span class="st">'count'</span>]</span>
+<span id="cb28-47"><a href="#cb28-47"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb28-48"><a href="#cb28-48"></a>    </span>
+<span id="cb28-49"><a href="#cb28-49"></a>    cursor.execute(<span class="ss">f"SELECT * FROM alarms </span><span class="sc">{</span>where_query<span class="sc">}</span><span class="ss"> LIMIT ? OFFSET ?"</span>, (<span class="op">*</span>placeholder_values, size, offset))</span>
+<span id="cb28-50"><a href="#cb28-50"></a>    alarms <span class="op">=</span> cursor.fetchall()</span>
+<span id="cb28-51"><a href="#cb28-51"></a>    <span class="cf">return</span> {</span>
+<span id="cb28-52"><a href="#cb28-52"></a>        <span class="st">'last_page'</span>: n_pages,</span>
+<span id="cb28-53"><a href="#cb28-53"></a>        <span class="st">'data'</span>: alarms </span>
+<span id="cb28-54"><a href="#cb28-54"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>As you can see I made use of python’s <code>match</code> operator to match on both the <code>field</code> and the <code>type</code>. In the case of <code>alarm</code> as a field I am casting the datetime column to date.</p>
+<p>After setting all this up you should have a nice table that allows you to filter on the text and date column.</p>
+<p>This is the end result I’m getting for the code written:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><video src="server_side_filtering.webm" class="img-fluid" controls=""><a href="server_side_filtering.webm">Video</a></video></p>
+<figcaption class="figure-caption">Tabulator with server side filtering</figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="conclusion-and-remarks" class="level1">
+<h1>Conclusion and remarks</h1>
+<p>The idea of this blog post was for me to document the steps required to create a powerful javascript table that wraps a data source. In my real case I am using a different database and different visualization features, but the main ideas are the one shown here. In case you would like to clone the final result you can check out my github repo here: <a href="https://github.com/grigolet/tabulator-sql-fastapi-demo">https://github.com/grigolet/tabulator-sql-fastapi-demo</a>. There are for sure better ways to implement what I’ve done and any suggestion is more than welcome. I may also have some unsafe code. If that is the case, please feel free to let me know in the comments. There are other features that I haven’t investigated yet, such as having categorical selections on some columns. I might update this post if further developments happen.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+<script src="https://giscus.app/client.js" data-repo="grigolet/blog-comments" data-repo-id="R_kgDOH9KztA" data-category="General" data-category-id="DIC_kwDOH9KztM4CRSJC" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
+</script>
+</div> <!-- /content -->
+
+
+
+<script src="../../site_libs/quarto-contrib/line-highlight-1.0.0/line-highlight.js" defer="true"></script>
+</body></html>
