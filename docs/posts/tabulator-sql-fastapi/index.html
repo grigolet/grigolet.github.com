@@ -104,13 +104,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:description" content="With server side pagination and filtering">
 <meta property="og:image" content="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png">
 <meta property="og:site-name" content="G.R.'s Blog">
-<meta property="og:image:height" content="678">
-<meta property="og:image:width" content="1247">
+<meta property="og:image:height" content="587">
+<meta property="og:image:width" content="1248">
 <meta name="twitter:title" content="G.R.’s Blog - Display data from a SQL source on the web with Tabulator and FastAPI">
 <meta name="twitter:description" content="With server side pagination and filtering">
 <meta name="twitter:image" content="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png">
-<meta name="twitter:image-height" content="678">
-<meta name="twitter:image-width" content="1247">
+<meta name="twitter:image-height" content="587">
+<meta name="twitter:image-width" content="1248">
 <meta name="twitter:card" content="summary_large_image">
 </head>
 
@@ -210,7 +210,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#adding-server-side-filtering" id="toc-adding-server-side-filtering" class="nav-link" data-scroll-target="#adding-server-side-filtering">Adding server side filtering</a></li>
   <li><a href="#adding-date-filters" id="toc-adding-date-filters" class="nav-link" data-scroll-target="#adding-date-filters">Adding date filters</a></li>
   </ul></li>
-  <li><a href="#inspecting-a-single-alarm" id="toc-inspecting-a-single-alarm" class="nav-link" data-scroll-target="#inspecting-a-single-alarm">Inspecting a single alarm</a></li>
+  <li><a href="#showing-a-single-alarm" id="toc-showing-a-single-alarm" class="nav-link" data-scroll-target="#showing-a-single-alarm">Showing a single alarm</a></li>
   <li><a href="#conclusion-and-remarks" id="toc-conclusion-and-remarks" class="nav-link" data-scroll-target="#conclusion-and-remarks">Conclusion and remarks</a></li>
   </ul>
 </nav>
@@ -493,38 +493,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-with-filename-file">
 <pre><strong>app/main.py</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-19" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-19-1" class="code-annotation-target"><a href="#annotated-cell-19-1"></a><span class="at">@app.get</span>(<span class="st">"/alarm"</span>)</span>
+<div class="sourceCode" id="annotated-cell-19" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="1">1</button><span id="annotated-cell-19-1" class="code-annotation-target"><a href="#annotated-cell-19-1"></a><span class="at">@app.get</span>(<span class="st">"/alarm"</span>)</span>
 <span id="annotated-cell-19-2"><a href="#annotated-cell-19-2"></a><span class="cf">async</span> <span class="kw">def</span> alarm(</span>
 <span id="annotated-cell-19-3"><a href="#annotated-cell-19-3"></a>    request: Request, </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-19-4" class="code-annotation-target"><a href="#annotated-cell-19-4"></a>    <span class="bu">id</span>: Annotated[<span class="bu">int</span>, Query()],</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-19-5" class="code-annotation-target"><a href="#annotated-cell-19-5"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db),</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="2">2</button><span id="annotated-cell-19-4" class="code-annotation-target"><a href="#annotated-cell-19-4"></a>    <span class="bu">id</span>: Annotated[<span class="bu">int</span>, Query()],</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="3">3</button><span id="annotated-cell-19-5" class="code-annotation-target"><a href="#annotated-cell-19-5"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db),</span>
 <span id="annotated-cell-19-6"><a href="#annotated-cell-19-6"></a>):</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-19-7" class="code-annotation-target"><a href="#annotated-cell-19-7"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="4">4</button><span id="annotated-cell-19-7" class="code-annotation-target"><a href="#annotated-cell-19-7"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
 <span id="annotated-cell-19-8"><a href="#annotated-cell-19-8"></a>    cursor <span class="op">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-19-9" class="code-annotation-target"><a href="#annotated-cell-19-9"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms WHERE id = ?"</span>, (<span class="bu">id</span>, ))</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="5">5</button><span id="annotated-cell-19-9" class="code-annotation-target"><a href="#annotated-cell-19-9"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms WHERE id = ?"</span>, (<span class="bu">id</span>, ))</span>
 <span id="annotated-cell-19-10"><a href="#annotated-cell-19-10"></a>    result <span class="op">=</span> cursor.fetchone()</span>
 <span id="annotated-cell-19-11"><a href="#annotated-cell-19-11"></a>    <span class="cf">return</span> result</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-19" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-annotation="1" data-code-cell="annotated-cell-19">I defined a GET endpoint for <code>/alarms</code></span>
+<span data-code-cell="annotated-cell-19" data-code-lines="1" data-code-annotation="1">I defined a GET endpoint for <code>/alarms</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="4" data-code-annotation="2" data-code-cell="annotated-cell-19">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="4" data-code-annotation="2">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="5" data-code-annotation="3" data-code-cell="annotated-cell-19">The db object is the dependency that I have explained earlier</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="5" data-code-annotation="3">The db object is the dependency that I have explained earlier</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="7" data-code-annotation="4" data-code-cell="annotated-cell-19">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="7" data-code-annotation="4">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="9" data-code-annotation="5" data-code-cell="annotated-cell-19">I am passing a query, selecting by id and using a placeholder to bind external values</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="9" data-code-annotation="5">I am passing a query, selecting by id and using a placeholder to bind external values</span>
 </dd>
 </dl>
 <p>Moving now to the <code>/alarms</code> endpoint, this will be a bit more sophisticated: <a href="https://tabulator.info/docs/5.5/page#remote-response">in order to prepare the data to be consumed by Tabulator</a> we would need to accept the size of a page <code>size</code>, the number of the page we want to get <code>page</code>, and we should return a json with one key called <code>last_page</code> indicating the total number of pages and one key called <code>data</code> with the returned data. The code looks like this:</p>
@@ -535,44 +535,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="annotated-cell-20" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-20-1"><a href="#annotated-cell-20-1"></a><span class="at">@app.get</span>(<span class="st">"/alarms"</span>)</span>
 <span id="annotated-cell-20-2"><a href="#annotated-cell-20-2"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
 <span id="annotated-cell-20-3"><a href="#annotated-cell-20-3"></a>    request: Request,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-20-4" class="code-annotation-target"><a href="#annotated-cell-20-4"></a>    page: Annotated[<span class="bu">int</span>, Query(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="1">1</button><span id="annotated-cell-20-4" class="code-annotation-target"><a href="#annotated-cell-20-4"></a>    page: Annotated[<span class="bu">int</span>, Query(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
 <span id="annotated-cell-20-5"><a href="#annotated-cell-20-5"></a>    size: Annotated[<span class="bu">int</span>, Query(lt<span class="op">=</span><span class="dv">100</span>)] <span class="op">=</span> <span class="dv">100</span>,</span>
 <span id="annotated-cell-20-6"><a href="#annotated-cell-20-6"></a>    db: sqlite3.Connection <span class="op">=</span> Depends(get_db) </span>
 <span id="annotated-cell-20-7"><a href="#annotated-cell-20-7"></a>):</span>
 <span id="annotated-cell-20-8"><a href="#annotated-cell-20-8"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
 <span id="annotated-cell-20-9"><a href="#annotated-cell-20-9"></a>    cursor <span class="op">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-20-10" class="code-annotation-target"><a href="#annotated-cell-20-10"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-20-11" class="code-annotation-target"><a href="#annotated-cell-20-11"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) FROM alarms"</span>)</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="2">2</button><span id="annotated-cell-20-10" class="code-annotation-target"><a href="#annotated-cell-20-10"></a>    offset <span class="op">=</span> (page <span class="op">-</span> <span class="dv">1</span>) <span class="op">*</span> size</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="3">3</button><span id="annotated-cell-20-11" class="code-annotation-target"><a href="#annotated-cell-20-11"></a>    cursor.execute(<span class="st">"SELECT COUNT(id) FROM alarms"</span>)</span>
 <span id="annotated-cell-20-12"><a href="#annotated-cell-20-12"></a>    n_rows <span class="op">=</span> cursor.fetchone()[<span class="st">'count'</span>]</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-20-13" class="code-annotation-target"><a href="#annotated-cell-20-13"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="4">4</button><span id="annotated-cell-20-13" class="code-annotation-target"><a href="#annotated-cell-20-13"></a>    n_pages <span class="op">=</span> n_rows <span class="op">//</span> size <span class="cf">if</span> n_rows <span class="op">%</span> size <span class="op">==</span> <span class="dv">0</span> <span class="cf">else</span> n_rows <span class="op">//</span> size <span class="op">+</span> <span class="dv">1</span></span>
 <span id="annotated-cell-20-14"><a href="#annotated-cell-20-14"></a>    </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-20-15" class="code-annotation-target"><a href="#annotated-cell-20-15"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms LIMIT ? OFFSET ?"</span>, (size, offset))</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="5">5</button><span id="annotated-cell-20-15" class="code-annotation-target"><a href="#annotated-cell-20-15"></a>    cursor.execute(<span class="st">"SELECT * FROM alarms LIMIT ? OFFSET ?"</span>, (size, offset))</span>
 <span id="annotated-cell-20-16"><a href="#annotated-cell-20-16"></a>    alarms <span class="op">=</span> cursor.fetchall()</span>
 <span id="annotated-cell-20-17"><a href="#annotated-cell-20-17"></a>    <span class="cf">return</span> {</span>
 <span id="annotated-cell-20-18"><a href="#annotated-cell-20-18"></a>        <span class="st">'last_page'</span>: n_pages,</span>
 <span id="annotated-cell-20-19"><a href="#annotated-cell-20-19"></a>        <span class="st">'data'</span>: alarms </span>
 <span id="annotated-cell-20-20"><a href="#annotated-cell-20-20"></a>    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-20" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="4,5" data-code-annotation="1" data-code-cell="annotated-cell-20"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="4,5" data-code-annotation="1"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="10" data-code-annotation="2" data-code-cell="annotated-cell-20">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="10" data-code-annotation="2">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="11" data-code-annotation="3" data-code-cell="annotated-cell-20">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="11" data-code-annotation="3">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="13" data-code-annotation="4" data-code-cell="annotated-cell-20">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
+<span data-code-cell="annotated-cell-20" data-code-lines="13" data-code-annotation="4">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="15" data-code-annotation="5" data-code-cell="annotated-cell-20">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
+<span data-code-cell="annotated-cell-20" data-code-lines="15" data-code-annotation="5">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
 </dd>
 </dl>
 <p>If you look now what you get at <code>localhost:8000/alarms</code> you would see something like:</p>
@@ -819,7 +819,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-with-filename-file">
 <pre><strong>app/main.py</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-29" data-source-line-numbers="11-33,40" data-code-line-numbers="11-33,40"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-29-1"><a href="#annotated-cell-29-1"></a><span class="at">@app.post</span>(<span class="st">"/alarms"</span>)</span>
+<div class="sourceCode" id="annotated-cell-29" data-code-line-numbers=""><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-29-1"><a href="#annotated-cell-29-1"></a><span class="at">@app.post</span>(<span class="st">"/alarms"</span>)</span>
 <span id="annotated-cell-29-2"><a href="#annotated-cell-29-2"></a><span class="cf">async</span> <span class="kw">def</span> home(</span>
 <span id="annotated-cell-29-3"><a href="#annotated-cell-29-3"></a>    request: Request,</span>
 <span id="annotated-cell-29-4"><a href="#annotated-cell-29-4"></a>    page: Annotated[<span class="bu">int</span>, Body(ge<span class="op">=</span><span class="dv">1</span>)] <span class="op">=</span> <span class="dv">1</span>,</span>
@@ -829,7 +829,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="annotated-cell-29-8"><a href="#annotated-cell-29-8"></a>):</span>
 <span id="annotated-cell-29-9"><a href="#annotated-cell-29-9"></a>    db.row_factory <span class="op">=</span> sqlite3.Row</span>
 <span id="annotated-cell-29-10"><a href="#annotated-cell-29-10"></a>    cursor <span class="op">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-29-11" class="code-annotation-target"><a href="#annotated-cell-29-11"></a>    where_clauses <span class="op">=</span> []</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="1">1</button><span id="annotated-cell-29-11" class="code-annotation-target"><a href="#annotated-cell-29-11"></a>    where_clauses <span class="op">=</span> []</span>
 <span id="annotated-cell-29-12"><a href="#annotated-cell-29-12"></a>    where_query <span class="op">=</span> <span class="st">""</span></span>
 <span id="annotated-cell-29-13"><a href="#annotated-cell-29-13"></a>    placeholder_values <span class="op">=</span> []</span>
 <span id="annotated-cell-29-14"><a href="#annotated-cell-29-14"></a>    <span class="cf">if</span> <span class="bu">len</span>(<span class="bu">filter</span>):  <span class="co"># Apply a WHERE clause in the SQL query</span></span>
@@ -837,11 +837,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="annotated-cell-29-16"><a href="#annotated-cell-29-16"></a>        <span class="cf">for</span> filter_obj <span class="kw">in</span> <span class="bu">filter</span>:</span>
 <span id="annotated-cell-29-17"><a href="#annotated-cell-29-17"></a>            field, <span class="bu">type</span>, value <span class="op">=</span> filter_obj[<span class="st">'field'</span>], filter_obj[<span class="st">'type'</span>], filter_obj[<span class="st">'value'</span>]</span>
 <span id="annotated-cell-29-18"><a href="#annotated-cell-29-18"></a>            <span class="co"># Check that the filter field can be trusted and exists as a column in our table</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-29-19" class="code-annotation-target"><a href="#annotated-cell-29-19"></a>            cursor.execute(<span class="st">"select name from PRAGMA_TABLE_INFO('alarms') where name = ?"</span>, (field,))</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="2">2</button><span id="annotated-cell-29-19" class="code-annotation-target"><a href="#annotated-cell-29-19"></a>            cursor.execute(<span class="st">"select name from PRAGMA_TABLE_INFO('alarms') where name = ?"</span>, (field,))</span>
 <span id="annotated-cell-29-20"><a href="#annotated-cell-29-20"></a>            column_field <span class="op">=</span> cursor.fetchone()</span>
 <span id="annotated-cell-29-21"><a href="#annotated-cell-29-21"></a>            operand <span class="op">=</span> <span class="bu">type</span>.upper()</span>
 <span id="annotated-cell-29-22"><a href="#annotated-cell-29-22"></a>            <span class="cf">if</span> column_field:  <span class="co"># the filter field exists as a column</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-29-23" class="code-annotation-target"><a href="#annotated-cell-29-23"></a>                <span class="cf">match</span> operand:</span>
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="3">3</button><span id="annotated-cell-29-23" class="code-annotation-target"><a href="#annotated-cell-29-23"></a>                <span class="cf">match</span> operand:</span>
 <span id="annotated-cell-29-24"><a href="#annotated-cell-29-24"></a>                    <span class="cf">case</span> <span class="st">'LIKE'</span>: <span class="co"># if using like as tabulator mention, add wildcards</span></span>
 <span id="annotated-cell-29-25"><a href="#annotated-cell-29-25"></a>                        placeholder_value <span class="op">=</span> <span class="ss">f'%</span><span class="sc">{</span>value<span class="sc">}</span><span class="ss">%'</span></span>
 <span id="annotated-cell-29-26"><a href="#annotated-cell-29-26"></a>                    <span class="cf">case</span> <span class="st">'='</span>:  <span class="co"># this is mostly used for numerical, categorical or date filtering</span></span>
@@ -865,18 +865,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="annotated-cell-29-44"><a href="#annotated-cell-29-44"></a>        <span class="st">'data'</span>: alarms </span>
 <span id="annotated-cell-29-45"><a href="#annotated-cell-29-45"></a>    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-29" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="11,12,13" data-code-annotation="1" data-code-cell="annotated-cell-29">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="11,12,13" data-code-annotation="1">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="19" data-code-annotation="2" data-code-cell="annotated-cell-29">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="19" data-code-annotation="2">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="23" data-code-annotation="3" data-code-cell="annotated-cell-29">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="23" data-code-annotation="3">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
 </dd>
 </dl>
 <p>And that’s it, now we have text filtering!</p>
@@ -1004,14 +1004,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This is the end result I’m getting for the code written:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><video src="server_side_filtering.webm" class="img-fluid" controls=""><a href="server_side_filtering.webm">Video</a></video></p>
-<figcaption class="figure-caption">Tabulator with server side filtering</figcaption>
+<p><img src="tabulator_example.gif" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Tabulator example</figcaption>
 </figure>
 </div>
 </section>
 </section>
-<section id="inspecting-a-single-alarm" class="level1">
-<h1>Inspecting a single alarm</h1>
+<section id="showing-a-single-alarm" class="level1">
+<h1>Showing a single alarm</h1>
 <p>When a table contains a lot of columns or a lot of text, it might be useful to inspect a single alarm. One way this could be done is to add a link to each row of the table that brings to an <code>alarm.html</code> page with the details of the alarm inspected. To do so, we can use the <code>id</code> column of the table and format it to render an url:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -1336,25 +1336,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-      // Attach click handler to the DT
-      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-      for (const annoteDlNode of annoteDls) {
-        annoteDlNode.addEventListener('click', (event) => {
-          const clickedEl = event.target;
-          if (clickedEl !== selectedAnnoteEl) {
-            unselectCodeLines();
-            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-            if (activeEl) {
-              activeEl.classList.remove('code-annotation-active');
-            }
-            selectCodeLines(clickedEl);
-            clickedEl.classList.add('code-annotation-active');
-          } else {
-            // Unselect the line
-            unselectCodeLines();
-            clickedEl.classList.remove('code-annotation-active');
+      // Handle positioning of the toggle
+      window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
           }
-        });
+        };
+      }
+      const annoteTargets = window.document.querySelectorAll('.code-annotation-anchor');
+      for (let i=0; i<annoteTargets.length; i++) {
+        const annoteTarget = annoteTargets[i];
+        const targetCell = annoteTarget.getAttribute("data-target-cell");
+        const targetAnnotation = annoteTarget.getAttribute("data-target-annotation");
+        const contentFn = () => {
+          const content = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          if (content) {
+            const tipContent = content.cloneNode(true);
+            tipContent.classList.add("code-annotation-tip-content");
+            return tipContent.outerHTML;
+          }
+        }
+        const config = {
+          allowHTML: true,
+          content: contentFn,
+          onShow: (instance) => {
+            selectCodeLines(instance.reference);
+            instance.reference.classList.add('code-annotation-active');
+            window.tippy.hideAll();
+          },
+          onHide: (instance) => {
+            unselectCodeLines();
+            instance.reference.classList.remove('code-annotation-active');
+          },
+          maxWidth: 300,
+          delay: [50, 0],
+          duration: [200, 0],
+          offset: [5, 10],
+          arrow: true,
+          trigger: 'click',
+          appendTo: function(el) {
+            return el.parentElement.parentElement.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'quarto',
+          placement: 'right',
+          positionFixed: true,
+          popperOptions: {
+            modifiers: [
+            {
+              name: 'flip',
+              options: {
+                flipVariations: false, // true by default
+                allowedAutoPlacements: ['right'],
+                fallbackPlacements: ['right', 'top', 'top-start', 'top-end'],
+              },
+            },
+            {
+              name: 'preventOverflow',
+              options: {
+                mainAxis: false,
+                altAxis: false
+              }
+            }
+            ]        
+          }      
+        };
+        window.tippy(annoteTarget, config); 
       }
   const findCites = (el) => {
     const parentEl = el.parentElement;

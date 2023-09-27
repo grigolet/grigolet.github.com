@@ -876,7 +876,7 @@ font-style: inherit;">finally</span>: </span>
 <div class="code-with-filename-file">
 <pre><strong>app/main.py</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-19" data-code-line-numbers="" style="background: #f1f3f5;"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-19-1" class="code-annotation-target"><span class="at" style="color: #657422;
+<div class="sourceCode" id="annotated-cell-19" data-code-line-numbers="" style="background: #f1f3f5;"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="1">1</button><span id="annotated-cell-19-1" class="code-annotation-target"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">@app.get</span>(<span class="st" style="color: #20794D;
 background-color: null;
@@ -887,22 +887,22 @@ font-style: inherit;">async</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">def</span> alarm(</span>
 <span id="annotated-cell-19-3">    request: Request, </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-19-4" class="code-annotation-target">    <span class="bu" style="color: null;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="2">2</button><span id="annotated-cell-19-4" class="code-annotation-target">    <span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">id</span>: Annotated[<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">int</span>, Query()],</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-19-5" class="code-annotation-target">    db: sqlite3.Connection <span class="op" style="color: #5E5E5E;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="3">3</button><span id="annotated-cell-19-5" class="code-annotation-target">    db: sqlite3.Connection <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> Depends(get_db),</span>
 <span id="annotated-cell-19-6">):</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-19-7" class="code-annotation-target">    db.row_factory <span class="op" style="color: #5E5E5E;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="4">4</button><span id="annotated-cell-19-7" class="code-annotation-target">    db.row_factory <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> sqlite3.Row</span>
 <span id="annotated-cell-19-8">    cursor <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-19-9" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-19" data-target-annotation="5">5</button><span id="annotated-cell-19-9" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"SELECT * FROM alarms WHERE id = ?"</span>, (<span class="bu" style="color: null;
 background-color: null;
@@ -914,26 +914,26 @@ font-style: inherit;">=</span> cursor.fetchone()</span>
 background-color: null;
 font-style: inherit;">return</span> result</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-19" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="1" data-code-annotation="1" data-code-cell="annotated-cell-19">I defined a GET endpoint for <code>/alarms</code></span>
+<span data-code-cell="annotated-cell-19" data-code-lines="1" data-code-annotation="1">I defined a GET endpoint for <code>/alarms</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="4" data-code-annotation="2" data-code-cell="annotated-cell-19">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="4" data-code-annotation="2">I’m telling FastAPI that id should be an <code>int</code> and a query parameter (passed through ‘?id=…’ on the url)</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="5" data-code-annotation="3" data-code-cell="annotated-cell-19">The db object is the dependency that I have explained earlier</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="5" data-code-annotation="3">The db object is the dependency that I have explained earlier</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="7" data-code-annotation="4" data-code-cell="annotated-cell-19">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="7" data-code-annotation="4">By default the rows will be returned as a list of tuples but I wanted to return a list of <code>dict</code> where the keys are the column names.</span>
 </dd>
 <dt data-target-cell="annotated-cell-19" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="9" data-code-annotation="5" data-code-cell="annotated-cell-19">I am passing a query, selecting by id and using a placeholder to bind external values</span>
+<span data-code-cell="annotated-cell-19" data-code-lines="9" data-code-annotation="5">I am passing a query, selecting by id and using a placeholder to bind external values</span>
 </dd>
 </dl>
 <p>Moving now to the <code>/alarms</code> endpoint, this will be a bit more sophisticated: <a href="https://tabulator.info/docs/5.5/page#remote-response">in order to prepare the data to be consumed by Tabulator</a> we would need to accept the size of a page <code>size</code>, the number of the page we want to get <code>page</code>, and we should return a json with one key called <code>last_page</code> indicating the total number of pages and one key called <code>data</code> with the returned data. The code looks like this:</p>
@@ -952,7 +952,7 @@ font-style: inherit;">async</span> <span class="kw" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">def</span> home(</span>
 <span id="annotated-cell-20-3">    request: Request,</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-20-4" class="code-annotation-target">    page: Annotated[<span class="bu" style="color: null;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="1">1</button><span id="annotated-cell-20-4" class="code-annotation-target">    page: Annotated[<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">int</span>, Query(ge<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -984,7 +984,7 @@ font-style: inherit;">=</span> sqlite3.Row</span>
 <span id="annotated-cell-20-9">    cursor <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-20-10" class="code-annotation-target">    offset <span class="op" style="color: #5E5E5E;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="2">2</button><span id="annotated-cell-20-10" class="code-annotation-target">    offset <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> (page <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -993,7 +993,7 @@ background-color: null;
 font-style: inherit;">1</span>) <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">*</span> size</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-20-11" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="3">3</button><span id="annotated-cell-20-11" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"SELECT COUNT(id) FROM alarms"</span>)</span>
 <span id="annotated-cell-20-12">    n_rows <span class="op" style="color: #5E5E5E;
@@ -1001,7 +1001,7 @@ background-color: null;
 font-style: inherit;">=</span> cursor.fetchone()[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'count'</span>]</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="4" onclick="event.preventDefault();">4</a><span id="annotated-cell-20-13" class="code-annotation-target">    n_pages <span class="op" style="color: #5E5E5E;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="4">4</button><span id="annotated-cell-20-13" class="code-annotation-target">    n_pages <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> n_rows <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1023,7 +1023,7 @@ font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span></span>
 <span id="annotated-cell-20-14">    </span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="5" onclick="event.preventDefault();">5</a><span id="annotated-cell-20-15" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-20" data-target-annotation="5">5</button><span id="annotated-cell-20-15" class="code-annotation-target">    cursor.execute(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"SELECT * FROM alarms LIMIT ? OFFSET ?"</span>, (size, offset))</span>
 <span id="annotated-cell-20-16">    alarms <span class="op" style="color: #5E5E5E;
@@ -1040,26 +1040,26 @@ background-color: null;
 font-style: inherit;">'data'</span>: alarms </span>
 <span id="annotated-cell-20-20">    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-20" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="4,5" data-code-annotation="1" data-code-cell="annotated-cell-20"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="4,5" data-code-annotation="1"><code>page</code> is a query parameter from a GET request. I’ve put the constraint that it should be always greater or equal than 1 <code>ge=1</code>. Similarly, <code>size</code> is a query parameter and I’ve put a constraint on the maximum number of items that can be requested</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="10" data-code-annotation="2" data-code-cell="annotated-cell-20">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="10" data-code-annotation="2">I’m computing an offset that will be used by the SQL query to get the paginated rows</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="11" data-code-annotation="3" data-code-cell="annotated-cell-20">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
+<span data-code-cell="annotated-cell-20" data-code-lines="11" data-code-annotation="3">Tabulator needs the total number of page so we need to count how many rows we have in the table</span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="4">4</dt>
 <dd>
-<span data-code-lines="13" data-code-annotation="4" data-code-cell="annotated-cell-20">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
+<span data-code-cell="annotated-cell-20" data-code-lines="13" data-code-annotation="4">The number of pages depends on the number of rows and on the size of the page. Remember to add one for the remainder rows from the division <code>n_rows/size</code></span>
 </dd>
 <dt data-target-cell="annotated-cell-20" data-target-annotation="5">5</dt>
 <dd>
-<span data-code-lines="15" data-code-annotation="5" data-code-cell="annotated-cell-20">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
+<span data-code-cell="annotated-cell-20" data-code-lines="15" data-code-annotation="5">I’m selecting the alarms with <code>size</code> and <code>offset</code></span>
 </dd>
 </dl>
 <p>If you look now what you get at <code>localhost:8000/alarms</code> you would see something like:</p>
@@ -2102,7 +2102,7 @@ font-style: inherit;">}</span></span></code></pre></div>
 <div class="code-with-filename-file">
 <pre><strong>app/main.py</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-29" data-source-line-numbers="11-33,40" data-code-line-numbers="11-33,40" style="background: #f1f3f5;"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-29-1"><span class="at" style="color: #657422;
+<div class="sourceCode" id="annotated-cell-29" data-code-line-numbers="" style="background: #f1f3f5;"><pre class="sourceCode numberSource python code-annotation-code number-lines code-with-copy code-annotated"><code class="sourceCode python"><span id="annotated-cell-29-1"><span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">@app.post</span>(<span class="st" style="color: #20794D;
 background-color: null;
@@ -2156,7 +2156,7 @@ font-style: inherit;">=</span> sqlite3.Row</span>
 <span id="annotated-cell-29-10">    cursor <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> db.cursor()</span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-29-11" class="code-annotation-target">    where_clauses <span class="op" style="color: #5E5E5E;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="1">1</button><span id="annotated-cell-29-11" class="code-annotation-target">    where_clauses <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> []</span>
 <span id="annotated-cell-29-12">    where_query <span class="op" style="color: #5E5E5E;
@@ -2202,7 +2202,7 @@ font-style: inherit;">'value'</span>]</span>
 <span id="annotated-cell-29-18">            <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Check that the filter field can be trusted and exists as a column in our table</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-29-19" class="code-annotation-target">            cursor.execute(<span class="st" style="color: #20794D;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="2">2</button><span id="annotated-cell-29-19" class="code-annotation-target">            cursor.execute(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"select name from PRAGMA_TABLE_INFO('alarms') where name = ?"</span>, (field,))</span>
 <span id="annotated-cell-29-20">            column_field <span class="op" style="color: #5E5E5E;
@@ -2218,7 +2218,7 @@ background-color: null;
 font-style: inherit;">if</span> column_field:  <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># the filter field exists as a column</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-29-23" class="code-annotation-target">                <span class="cf" style="color: #003B4F;
+<button class="code-annotation-anchor" data-target-cell="annotated-cell-29" data-target-annotation="3">3</button><span id="annotated-cell-29-23" class="code-annotation-target">                <span class="cf" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">match</span> operand:</span>
 <span id="annotated-cell-29-24">                    <span class="cf" style="color: #003B4F;
@@ -2360,18 +2360,18 @@ background-color: null;
 font-style: inherit;">'data'</span>: alarms </span>
 <span id="annotated-cell-29-45">    }</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
+<dl class="code-annotation-container-hidden code-annotation-container-grid">
 <dt data-target-cell="annotated-cell-29" data-target-annotation="1">1</dt>
 <dd>
-<span data-code-lines="11,12,13" data-code-annotation="1" data-code-cell="annotated-cell-29">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="11,12,13" data-code-annotation="1">I’m converting the list of filters as a list of SQL expressions that will end inside a <code>WHERE</code> clause.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="2">2</dt>
 <dd>
-<span data-code-lines="19" data-code-annotation="2" data-code-cell="annotated-cell-29">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="19" data-code-annotation="2">In this case I’m using an sqlite function to check if the <code>field</code> in the filter object passed is actually an existing column. In other databases and libraries such as PostgreSQL and pyscopg you can safely escape SQL identifier. In this case you can’t so either you <a href="https://stackoverflow.com/a/6701665/7635240">escape the column name by your own</a> or (at least I think) you check that the column name is valid and existing.</span>
 </dd>
 <dt data-target-cell="annotated-cell-29" data-target-annotation="3">3</dt>
 <dd>
-<span data-code-lines="23" data-code-annotation="3" data-code-cell="annotated-cell-29">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
+<span data-code-cell="annotated-cell-29" data-code-lines="23" data-code-annotation="3">The safety on the user input applies also for the operand, called <code>type</code> in the filter payload. In this case I’m supporting only two operators: <code>LIKE</code> and <code>=</code>. Any other string would raise an HTTP response with status code 400</span>
 </dd>
 </dl>
 <p>And that’s it, now we have text filtering!</p>
@@ -3023,14 +3023,14 @@ font-style: inherit;">'data'</span>: alarms </span>
 <p>This is the end result I’m getting for the code written:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><video src="server_side_filtering.webm" class="img-fluid" controls=""><a href="server_side_filtering.webm">Video</a></video></p>
-<figcaption class="figure-caption">Tabulator with server side filtering</figcaption>
+<p><img src="https://grigolet.github.io/posts/tabulator-sql-fastapi/tabulator_example.gif" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Tabulator example</figcaption>
 </figure>
 </div>
 </section>
 </section>
-<section id="inspecting-a-single-alarm" class="level1">
-<h1>Inspecting a single alarm</h1>
+<section id="showing-a-single-alarm" class="level1">
+<h1>Showing a single alarm</h1>
 <p>When a table contains a lot of columns or a lot of text, it might be useful to inspect a single alarm. One way this could be done is to add a link to each row of the table that brings to an <code>alarm.html</code> page with the details of the alarm inspected. To do so, we can use the <code>id</code> column of the table and format it to render an url:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
@@ -3702,7 +3702,7 @@ font-style: inherit;">'alarm'</span>: alarm}) </span>
   <category>SQL</category>
   <guid>https://grigolet.github.io/posts/tabulator-sql-fastapi/index.html</guid>
   <pubDate>Fri, 22 Sep 2023 22:00:00 GMT</pubDate>
-  <media:content url="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png" medium="image" type="image/png" height="78" width="144"/>
+  <media:content url="https://grigolet.github.io/posts/tabulator-sql-fastapi/preview.png" medium="image" type="image/png" height="68" width="144"/>
 </item>
 <item>
   <title>My take on overlapping densities (a.k.a. ridge) plots</title>

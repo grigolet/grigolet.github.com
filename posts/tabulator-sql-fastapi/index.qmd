@@ -10,7 +10,7 @@ format:
         code-fold: false
 filters:
     - line-highlight
-    
+code-annotations: select
 ---
 
 # Introduction
@@ -580,7 +580,7 @@ If you inspect the request from the developer console, you would see that when t
 The filter key contains a list of filters, each one for a set of condition that we can use to filter the data on our db. In particular,
 the `field` key refers to the column of the table, the `type` is the operator used and `value` is the value typed in in the header input. We should only be careful about possible SQL injections. For this reason
 
-```{.python filename="app/main.py" source-line-numbers="11-33,40"}
+```{.python filename="app/main.py"}
 @app.post("/alarms")
 async def home(
     request: Request,
@@ -760,10 +760,10 @@ After setting all this up you should have a nice table that allows you to filter
 
 This is the end result I'm getting for the code written:
 
-![Tabulator with server side filtering](server_side_filtering.webm)
+![Tabulator example](tabulator_example.gif)
 
 
-# Inspecting a single alarm
+# Showing a single alarm
 
 When a table contains a lot of columns or a lot of text, it might be useful to inspect a single alarm. One way this could be done is to
 add a link to each row of the table that brings to an `alarm.html` page with the details of the alarm inspected. To do so, we can use
